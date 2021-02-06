@@ -1,2 +1,3 @@
-import message from './message';
-console.log(message);
+import Sudoku from './Sudoku';
+
+const aSudoku = new Sudoku(document.querySelector('.sudoku'));

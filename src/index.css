@@ -1,0 +1,147 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: #1b2023;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #989ea2;
+}
+
+.sudoku {
+  width: 80vh;
+  height: 80vh;
+  margin: 0 auto;
+  border: 2px solid #989ea2;
+}
+
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+}
+
+.cell {
+  border: 1px solid rgba(152, 158, 162, 0.25);
+  font-size: 20px;
+  text-align: center;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
+  font-weight: 700;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.cell.cell-default {
+  color: #989ea2;
+  background: rgb(132, 140, 143, 0.3);
+}
+
+.sudoku-grid .cell:nth-child(3),
+.sudoku-grid .cell:nth-child(12),
+.sudoku-grid .cell:nth-child(21),
+.sudoku-grid .cell:nth-child(30),
+.sudoku-grid .cell:nth-child(39),
+.sudoku-grid .cell:nth-child(48),
+.sudoku-grid .cell:nth-child(57),
+.sudoku-grid .cell:nth-child(66),
+.sudoku-grid .cell:nth-child(75) {
+  border-right-color: rgba(152, 158, 162, 1);
+}
+
+.sudoku-grid .cell:nth-child(6),
+.sudoku-grid .cell:nth-child(15),
+.sudoku-grid .cell:nth-child(24),
+.sudoku-grid .cell:nth-child(33),
+.sudoku-grid .cell:nth-child(42),
+.sudoku-grid .cell:nth-child(51),
+.sudoku-grid .cell:nth-child(60),
+.sudoku-grid .cell:nth-child(69),
+.sudoku-grid .cell:nth-child(78) {
+  border-right-color: rgba(152, 158, 162, 1);
+}
+
+.sudoku-grid .cell:nth-child(19),
+.sudoku-grid .cell:nth-child(20),
+.sudoku-grid .cell:nth-child(21),
+.sudoku-grid .cell:nth-child(22),
+.sudoku-grid .cell:nth-child(23),
+.sudoku-grid .cell:nth-child(24),
+.sudoku-grid .cell:nth-child(25),
+.sudoku-grid .cell:nth-child(26),
+.sudoku-grid .cell:nth-child(27) {
+  border-bottom-color: rgba(152, 158, 162, 1);
+}
+
+.sudoku-grid .cell:nth-child(46),
+.sudoku-grid .cell:nth-child(47),
+.sudoku-grid .cell:nth-child(48),
+.sudoku-grid .cell:nth-child(49),
+.sudoku-grid .cell:nth-child(50),
+.sudoku-grid .cell:nth-child(51),
+.sudoku-grid .cell:nth-child(52),
+.sudoku-grid .cell:nth-child(53),
+.sudoku-grid .cell:nth-child(54) {
+  border-bottom-color: rgba(152, 158, 162, 1);
+}
+
+.marker-container {
+  width: 100%;
+  height: 100%;
+  padding: 0.25em;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.marker-container:hover .marker {
+  opacity: 0.5;
+  visibility: visible;
+}
+
+.marker-container:hover .marker.selected {
+  opacity: 1;
+  background-color: #5a7897;
+}
+
+.marker {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.675em;
+  font-weight: 400;
+  color: #989ea2;
+  cursor: pointer;
+  opacity: 0.5;
+  visibility: hidden;
+  border-radius: 50%;
+}
+
+.marker.selected {
+  opacity: 1;
+  visibility: visible;
+}
+
+.number-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 2em;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: -1;
+  bottom: 0;
+}
+
+/*#989EA2 
+#5A7897
+*/
