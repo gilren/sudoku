@@ -17,6 +17,7 @@ body {
   height: 80vh;
   margin: 0 auto;
   border: 2px solid #989ea2;
+  user-select: none;
 }
 
 .sudoku-grid {
@@ -107,7 +108,7 @@ body {
 
 .marker-container:hover .marker.selected {
   opacity: 1;
-  background-color: #5a7897;
+  background-color: rgba(90, 120, 151, 0.5);
 }
 
 .marker {
@@ -123,6 +124,18 @@ body {
   border-radius: 50%;
 }
 
+.marker-container:hover .marker:hover {
+  opacity: 1;
+}
+
+.has-one-marker .marker-container {
+  display: none;
+}
+
+.cell-hover.has-one-marker .marker-container {
+  display: grid;
+}
+
 .marker.selected {
   opacity: 1;
   visibility: visible;
@@ -133,7 +146,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100%;
-  font-size: 2em;
+  font-size: 2.5em;
   position: absolute;
   top: 0;
   right: 0;

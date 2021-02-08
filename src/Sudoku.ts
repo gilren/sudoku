@@ -1,12 +1,15 @@
-export default class Soduku {
-  wrapperEl: HTMLElement;
-  private Originalmap: Array<Array<Number>>;
-  private map: Array<Array<Number>>;
+import Observer from './Observer';
+import Cell from './Cell';
 
-  constructor(wrapperEl: HTMLElement) {
+export default class Soduku {
+  el: HTMLElement;
+  originalMap: Array<Array<number>>;
+  #currentMap: Array<Array<number>>;
+
+  constructor(el: HTMLElement) {
     console.log('Sudoku');
-    this.wrapperEl = wrapperEl;
-    this.Originalmap = [
+    this.el = el;
+    this.originalMap = [
       [0, 0, 0, 0, 0, 0, 6, 0, 9],
       [0, 3, 4, 8, 0, 9, 0, 0, 0],
       [2, 0, 1, 0, 0, 0, 0, 7, 0],
@@ -18,57 +21,39 @@ export default class Soduku {
       [1, 0, 9, 0, 0, 0, 0, 0, 0],
     ];
 
+    this.setCurrentMap(this.originalMap);
     this.display();
+
+    // console.log(this.getCurrentMap());
+  }
+
+  setCurrentMap(value: Array<Array<number>>) {
+    this.#currentMap = value;
+  }
+
+  getCurrentMap() {
+    return this.#currentMap;
   }
 
   display() {
     let fragment = new DocumentFragment();
-    for (const row of this.Originalmap) {
+    for (const row of this.originalMap) {
       for (const cell of row) {
-        const cellElement = document.createElement('div');
-        const numberElement = document.createElement('div');
-        cellElement.classList.add('cell');
-        numberElement.classList.add('number-container');
-        numberElement.textContent = '';
+        const cellItem = new Cell(cell);
+        const observer = new Observer();
+        cellItem.attach(observer);
+        const cellElement = cellItem.getCell();
 
-        if (cell !== 0) {
-          cellElement.classList.add('cell-default');
-          numberElement.textContent = cell.toString();
-        } else {
-          const markerElement = this.generateMarkers();
-          cellElement.appendChild(markerElement);
-        }
-        cellElement.appendChild(numberElement);
         fragment.appendChild(cellElement);
       }
     }
-    this.wrapperEl.classList.add('sudoku-grid');
-    this.wrapperEl.appendChild(fragment);
+    this.el.classList.add('sudoku-grid');
+    this.el.appendChild(fragment);
   }
 
-  generateMarkers() {
-    const markersElement = document.createElement('div');
-    markersElement.classList.add('marker-container');
-    for (let i = 1; i < 10; i++) {
-      const marker = document.createElement('span');
-      marker.textContent = i.toString();
-      marker.classList.add('marker');
-      markersElement.appendChild(marker);
-    }
-    markersElement.addEventListener('click', (event: Event) =>
-      this.handleMarkerClick(event),
-    );
-
-    return markersElement;
-  }
-
-  handleMarkerClick(e: Event) {
-    const marker = e.target as HTMLHtmlElement;
-    if (marker.classList.contains('marker-container')) return;
-    marker.classList.toggle('selected');
-
-    const cell = marker.parentElement.parentElement;
-    cell.querySelector('.number-container').textContent = marker.textContent;
-    // cell.classList.add
+  handleClickOnCell(e: event, cell: Cell) {
+    // e.stopPropagation();
+    console.log(e.target);
+    console.log(cell);
   }
 }
