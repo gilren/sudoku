@@ -1,4 +1,3 @@
-import Observer from './Observer';
 import Cell from './Cell';
 
 export default class Soduku {
@@ -36,24 +35,53 @@ export default class Soduku {
   }
 
   display() {
+    const self = this;
     let fragment = new DocumentFragment();
-    for (const row of this.originalMap) {
-      for (const cell of row) {
-        const cellItem = new Cell(cell);
-        const observer = new Observer();
-        cellItem.attach(observer);
+
+    for (let [index, val] of this.originalMap.entries()) {
+    }
+
+    let id = 0;
+    this.originalMap.forEach((row, x) => {
+      row.forEach((cell, y) => {
+        const cellItem = new Cell(cell, id, { x, y });
         const cellElement = cellItem.getCell();
 
+        cellItem.on('valueChanged', (value: number) =>
+          self.handleCellValueChanged(value, cellItem),
+        );
         fragment.appendChild(cellElement);
-      }
-    }
+        id++;
+      });
+    });
+
     this.el.classList.add('sudoku-grid');
     this.el.appendChild(fragment);
   }
 
-  handleClickOnCell(e: event, cell: Cell) {
-    // e.stopPropagation();
-    console.log(e.target);
+  handleCellValueChanged(value: number, cell: Cell) {
     console.log(cell);
+    const updatedMap = [...this.getCurrentMap()];
+    const { currentValue } = cell;
+    const { x, y } = cell.coords;
+
+    updatedMap[x][y] = currentValue;
+
+    this.setCurrentMap(updatedMap);
+
+    //columns
+    updatedMap.forEach((row, coordX) => {
+      console.log(row[1]);
+      console.log(coordX);
+      const coordY = 1;
+      if (currentValue === 0 || [x, y] === [coordX, coordY]) return;
+      if (row[1] === currentValue) {
+        console.log('error');
+      }
+    });
+
+    console.log(this.#currentMap);
   }
+
+  // checkDuplicate()
 }

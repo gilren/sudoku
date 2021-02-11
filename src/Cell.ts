@@ -1,14 +1,24 @@
-import Observer from './Observer';
+import EventEmitter from './EventEmitter';
 
-export default class Cell {
-  private observer: Observer;
+interface CoordsType {
+  x: number;
+  y: number;
+}
 
-  markers: Array<Number> = [];
+export default class Cell extends EventEmitter {
+  markers: Array<number> = [];
 
   el: HTMLDivElement;
-  currentValue: Number = 0;
+  currentValue: number = 0;
+  id: number;
+  coords: CoordsType;
 
-  constructor(value: Number) {
+  constructor(value: number, id: number, coords: CoordsType) {
+    super();
+    this.id = id;
+
+    this.coords = coords;
+
     const cellElement = document.createElement('div');
     const numberElement = document.createElement('div');
     cellElement.classList.add('cell');
@@ -86,9 +96,7 @@ export default class Cell {
       this.currentValue = this.markers[0];
     }
 
-    if (this.observer != null) {
-      this.observer.currentValue(this.currentValue);
-    }
+    this.emit('valueChanged', this.currentValue);
 
     // cell.classList.add
   }
@@ -100,9 +108,5 @@ export default class Cell {
   private handleCellMouseOut(e: Event) {
     const cell = e.target as HTMLElement;
     cell.classList.remove('cell-hover');
-  }
-
-  public attach(observer: Observer) {
-    this.observer = observer;
   }
 }
