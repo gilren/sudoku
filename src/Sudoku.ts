@@ -1,6 +1,7 @@
 import Cell from './Cell';
+import Solver from './Solver';
 
-export default class Soduku {
+export default class Sudoku {
   el: HTMLElement;
   originalMap: Array<Array<number>>;
   #currentMap: Array<Array<number>>;
@@ -55,7 +56,14 @@ export default class Soduku {
       });
     });
 
+    const solveBtn = document.createElement('button');
+    solveBtn.textContent = 'Solve';
+    solveBtn.addEventListener('click', () => {
+      this.validate();
+    });
+
     this.el.classList.add('sudoku-grid');
+    this.el.parentNode.appendChild(solveBtn);
     this.el.appendChild(fragment);
   }
 
@@ -68,20 +76,12 @@ export default class Soduku {
     updatedMap[x][y] = currentValue;
 
     this.setCurrentMap(updatedMap);
-
-    //columns
-    updatedMap.forEach((row, coordX) => {
-      console.log(row[1]);
-      console.log(coordX);
-      const coordY = 1;
-      if (currentValue === 0 || [x, y] === [coordX, coordY]) return;
-      if (row[1] === currentValue) {
-        console.log('error');
-      }
-    });
-
-    console.log(this.#currentMap);
   }
 
-  // checkDuplicate()
+  validate() {
+    let errors = [];
+
+    const solver = new Solver([...this.getCurrentMap()]);
+    const solution = solver.solve();
+  }
 }

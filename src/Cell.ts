@@ -33,6 +33,7 @@ export default class Cell extends EventEmitter {
 
       cellElement.appendChild(markerElement);
     }
+    cellElement.appendChild(this.generateHelper(this.id));
     cellElement.addEventListener('mouseenter', (event: Event) =>
       this.handleCellMouseOver(event),
     );
@@ -62,6 +63,14 @@ export default class Cell extends EventEmitter {
     );
 
     return markersElement;
+  }
+
+  private generateHelper(id: number) {
+    const helperElement = document.createElement('span');
+    helperElement.classList.add('helper');
+    helperElement.textContent = id.toString();
+
+    return helperElement;
   }
 
   private toggleMarker(value: number) {
