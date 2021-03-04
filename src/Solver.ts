@@ -3,37 +3,51 @@ import Cell from './Cell';
 export default class Solver {
   originalMap: Array<Array<number>>;
   #solution: Array<Array<number>>;
+  isSolved: boolean = false;
 
   constructor(orginalMap: Array<Array<number>>) {
     this.#solution = orginalMap;
   }
 
   solve() {
-    // for (let row = 0; row < 9; row++) {
-    //   for(let col = 0; col < 9; col++ ) {
-    //   let col = 0;
-    //   let value = 1;
-    //   while(value < 10) {
-    //     const currentRow = solution[row];
-    //     value++;
-    //     col++;
-    //   }
-    //     for(let v = 1; v < 10; v++) {
-    //       const line = solution[x];
-    //       const col =
-    //       solution[x][0]
-    //       solution[x][1]
-    //       solution[x][2]
-    //       solution[x][3]
-    //       solution[x][4]
-    //       solution[x][5]
-    //       solution[x][6]
-    //       solution[x][7]
-    //       solution[x][8]
-    //       solution[x][y]
-    //     }
-    //   }
-    // }
+    console.log(this.isAllowedInCell(4, 0, 0));
+    let iteration = 0;
+    while (!this.isSolved) {
+      for (let row = 0; row < 9; row++) {
+        for (let col = 0; col < 9; col++) {
+          if (this.#solution[row][col] === 0) {
+            let value = 1;
+
+            let allowedValues = [];
+            while (value < 10) {
+              if (this.isAllowedInCell(value, row, col)) {
+                // console.log(`${value} is allowed in cell [${row}, ${col}]`);
+                allowedValues.push(value);
+              }
+              value++;
+            }
+            if (value > 9) {
+              if (allowedValues.length === 1) {
+                console.log(
+                  `${allowedValues[0]} was inserted in cell [${row}, ${col}]`,
+                );
+                this.#solution[row][col] = allowedValues[0];
+              }
+            }
+          }
+        }
+      }
+      iteration++;
+      if (iteration == 50) {
+        this.isSolved = true;
+      }
+      // this.isSolved =
+      //   [].concat(...this.#solution).filter((x) => x === 0).length < 1;
+      console.log(this.#solution);
+
+      // this.isSolved =
+      //   ;
+    }
   }
 
   setSolution(value: Array<Array<number>>) {
@@ -44,24 +58,44 @@ export default class Solver {
     return this.#solution;
   }
 
-  isInArray(value: number, array: Array<number>) {}
-
-  isInRow(value: number, row: number) {
-    return this.isInArray(value, this.#solution[row]);
+  isDuplicateInArray(value: number, array: Array<number>) {
+    return [...array].filter((x) => x === value).length < 1;
   }
 
-  isInColumn(value: number, col: number) {
+  isAllowedInCell(value, posX, posY) {
+    return (
+      this.isAllowedInBlock(value, posX, posY) &&
+      this.isAllowedInRow(value, posX) &&
+      this.isAllowedInColumn(value, posY)
+    );
+  }
+
+  isAllowedInRow(value: number, row: number) {
+    return this.isDuplicateInArray(value, this.#solution[row]);
+  }
+
+  isAllowedInColumn(value: number, col: number) {
     const column = this.getSolution().map((value) => value[col]);
-    return this.isInArray(value, column);
+    return this.isDuplicateInArray(value, column);
   }
 
-  isInBlock(value: number, posX: number, posY: number) {
+  isAllowedInBlock(value: number, posX: number, posY: number) {
     const index = posX * 9 + posY;
 
-    // [6,0][6, 1][6,2]
-    // [7,0][7, 1][7,2]
-    // [8,0][8, 1][8,2]
+    // Find wich block the cell is a part of
+    let currentBlockNb = Math.floor(posX / 3) + 1 + Math.floor(posY / 3) + 1;
 
-    // [Math.floor(index / 3), index % 3]
+    let startX = posX - (posX - 3 * Math.floor(posX / 3));
+    let startY = Math.floor(posY / 3) * 3;
+
+    let blockArray = [];
+
+    for (let x = 0; x < 3; x++) {
+      for (let y = 0; y < 3; y++) {
+        blockArray.push(this.getSolution()[startX + x][startY + y]);
+      }
+    }
+
+    return this.isDuplicateInArray(value, blockArray);
   }
 }

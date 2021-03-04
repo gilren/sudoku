@@ -167,3 +167,7 @@ body {
   font-size: 12px;
   color: tomato;
 }
+
+.cell:not(.cell-default) .text-solution {
+  color: green;
+}

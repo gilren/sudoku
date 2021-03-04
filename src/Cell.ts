@@ -21,6 +21,7 @@ export default class Cell extends EventEmitter {
 
     const cellElement = document.createElement('div');
     const numberElement = document.createElement('div');
+    cellElement.id = id.toString();
     cellElement.classList.add('cell');
     numberElement.classList.add('number-container');
     numberElement.textContent = '';
@@ -33,7 +34,7 @@ export default class Cell extends EventEmitter {
 
       cellElement.appendChild(markerElement);
     }
-    cellElement.appendChild(this.generateHelper(this.id));
+    cellElement.appendChild(this.generateHelper());
     cellElement.addEventListener('mouseenter', (event: Event) =>
       this.handleCellMouseOver(event),
     );
@@ -65,10 +66,11 @@ export default class Cell extends EventEmitter {
     return markersElement;
   }
 
-  private generateHelper(id: number) {
+  private generateHelper() {
     const helperElement = document.createElement('span');
     helperElement.classList.add('helper');
-    helperElement.textContent = id.toString();
+    helperElement.textContent =
+      this.id.toString() + ' [' + this.coords.x + ',' + this.coords.y + ']';
 
     return helperElement;
   }
@@ -117,5 +119,11 @@ export default class Cell extends EventEmitter {
   private handleCellMouseOut(e: Event) {
     const cell = e.target as HTMLElement;
     cell.classList.remove('cell-hover');
+  }
+
+  setValue(value: number) {
+    this.currentValue = value;
+    this.el.querySelector('.number-container').classList.add('text-solution');
+    this.el.querySelector('.number-container').textContent = value.toString();
   }
 }

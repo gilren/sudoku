@@ -3,12 +3,14 @@ import Solver from './Solver';
 
 export default class Sudoku {
   el: HTMLElement;
+  cells: Array<Cell>;
   originalMap: Array<Array<number>>;
   #currentMap: Array<Array<number>>;
 
   constructor(el: HTMLElement) {
     console.log('Sudoku');
     this.el = el;
+    this.cells = [];
     this.originalMap = [
       [0, 0, 0, 0, 0, 0, 6, 0, 9],
       [0, 3, 4, 8, 0, 9, 0, 0, 0],
@@ -23,7 +25,6 @@ export default class Sudoku {
 
     this.setCurrentMap(this.originalMap);
     this.display();
-
     // console.log(this.getCurrentMap());
   }
 
@@ -37,6 +38,7 @@ export default class Sudoku {
 
   display() {
     const self = this;
+
     let fragment = new DocumentFragment();
 
     for (let [index, val] of this.originalMap.entries()) {
@@ -51,6 +53,7 @@ export default class Sudoku {
         cellItem.on('valueChanged', (value: number) =>
           self.handleCellValueChanged(value, cellItem),
         );
+        self.cells.push(cellItem);
         fragment.appendChild(cellElement);
         id++;
       });
@@ -67,8 +70,16 @@ export default class Sudoku {
     this.el.appendChild(fragment);
   }
 
+  displaySolution(solution: Array<Array<number>>) {
+    const values = [].concat(...solution);
+    this.cells.forEach((cell, index) => {
+      cell.setValue(values[index]);
+    });
+  }
+
   handleCellValueChanged(value: number, cell: Cell) {
     console.log(cell);
+    console.log(cell.coords);
     const updatedMap = [...this.getCurrentMap()];
     const { currentValue } = cell;
     const { x, y } = cell.coords;
@@ -83,5 +94,6 @@ export default class Sudoku {
 
     const solver = new Solver([...this.getCurrentMap()]);
     const solution = solver.solve();
+    this.displaySolution(solver.getSolution());
   }
 }
