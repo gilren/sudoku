@@ -1,7 +1,8 @@
 import Cell from './Cell';
 import Solver from './Solver';
 
-// [
+//  Easy
+//  [
 //   [0, 0, 0, 0, 0, 0, 6, 0, 9],
 //   [0, 3, 4, 8, 0, 9, 0, 0, 0],
 //   [2, 0, 1, 0, 0, 0, 0, 7, 0],
@@ -13,6 +14,19 @@ import Solver from './Solver';
 //   [1, 0, 9, 0, 0, 0, 0, 0, 0],
 // ];
 
+//  Hard
+//  [
+//   [0, 0, 0, 2, 0, 6, 0, 0, 1],
+//   [0, 0, 5, 3, 0, 0, 0, 8, 0],
+//   [2, 3, 0, 7, 1, 0, 0, 0, 0],
+//   [0, 6, 0, 0, 0, 0, 0, 7, 0],
+//   [0, 0, 9, 5, 4, 0, 8, 0, 0],
+//   [3, 0, 4, 0, 0, 0, 0, 0, 0],
+//   [0, 8, 3, 0, 0, 0, 7, 9, 0],
+//   [0, 0, 0, 0, 0, 0, 0, 0, 0],
+//   [0, 0, 0, 9, 0, 0, 0, 0, 5],
+// ];
+
 export default class Sudoku {
   el: HTMLElement;
   cells: Array<Cell>;
@@ -20,7 +34,6 @@ export default class Sudoku {
   #currentMap: Array<Array<number>>;
 
   constructor(el: HTMLElement) {
-    console.log('Sudoku');
     this.el = el;
     this.cells = [];
     this.originalMap = [
