@@ -171,3 +171,9 @@ body {
 .cell:not(.cell-default) .text-solution {
   color: green;
 }
+
+.number-possibilities {
+  font-size: 12px;
+  position: absolute;
+  bottom: 0;
+}

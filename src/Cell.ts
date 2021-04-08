@@ -126,4 +126,11 @@ export default class Cell extends EventEmitter {
     this.el.querySelector('.number-container').classList.add('text-solution');
     this.el.querySelector('.number-container').textContent = value.toString();
   }
+  
+  setPossibilities(possibilites: Array<number>) {
+    const possibilitesDOm = document.createElement('div')
+    possibilitesDOm.classList.add('number-possibilities')
+    possibilitesDOm.textContent = possibilites.toString();
+    this.el.querySelector('.number-container').appendChild(possibilitesDOm) 
+  }
 }
