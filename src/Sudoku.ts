@@ -62,15 +62,15 @@ export default class Sudoku {
     this.validate();
   }
 
-  displaySolution(solution: Array<Array<number>>, possibilites: Array<Array<Array<number>>>) {
+  displaySolution(solution: Array<Array<number>>, possibilities: Array<Array<Array<number>>>) {
     const values = [].concat(...solution);
-    const possibilitesValues = [].concat(...possibilites)
+    const possibilitiesValues = [].concat(...possibilities)
     this.cells.forEach((cell, index) => {
       const val = values[index];
       if (val !== 0) {
         cell.setValue(val);
       }
-      cell.setPossibilities(possibilitesValues[index]);
+      cell.setPossibilities(possibilitiesValues[index]);
       
     });
   }
@@ -92,7 +92,7 @@ export default class Sudoku {
 
     const solver = new Solver([...this.getCurrentMap()]);
     solver.solve();
-    const possibilities = solver.getPossibilites()
+    const possibilities = solver.getPossibilities()
     this.displaySolution(solver.getSolution(), possibilities);
   }
 }

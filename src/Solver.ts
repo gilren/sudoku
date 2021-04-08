@@ -3,20 +3,20 @@ import { potentialValuesMap, allowedValue } from './types';
 export default class Solver {
   originalMap: Array<Array<number>>;
   #solution: Array<Array<number>>;
-  possibilites: Array<Array<Array<number>>>;
+  possibilities: Array<Array<Array<number>>>;
   isSolved: boolean = false;
 
   constructor(orginalMap: Array<Array<number>>) {
     this.#solution = orginalMap;
-    this.possibilites = [];
+    this.possibilities = [];
   }
 
-  initPossibilites() {
-    let tempPossibilites = [];
+  initPossibilities() {
+    let tempPossibilities = [];
 
     for (let x = 0; x < 9; x++) {
       let tempRow = [];
-      const row = this.#solution[x];
+      const row = this.getRow(x);
       let values = this.getMissingValuesFromArray(row);
       for (let y = 0; y < 9; y++) {
         if (this.#solution[x][y] !== 0) {
@@ -25,25 +25,22 @@ export default class Solver {
           tempRow.push(values);
         }
       }
-      tempPossibilites.push(tempRow);
+      tempPossibilities.push(tempRow);
     }
        
     for (let y = 0; y < 9; y++) {
-      const column = [...this.#solution].map((value) => value[y]);
+      const column = this.getColumn(y);
       for (let x = 0; x < 9; x++) {
-        tempPossibilites[x][y] = tempPossibilites[x][y].filter(
+        tempPossibilities[x][y] = tempPossibilities[x][y].filter(
           (val) => !column.includes(val),
         );
       }
     }
-
-    
-
-    this.possibilites = tempPossibilites;
+    this.possibilities = tempPossibilities;
   }
 
   solve() {
-    this.initPossibilites();
+    this.initPossibilities();
     this.checkRow(0);
     this.checkRow(1);
     this.checkRow(2);
@@ -225,15 +222,15 @@ export default class Solver {
       }
     }
 
-    console.table(this.possibilites);
+    console.table(this.possibilities);
   }
 
   getSolution() {
     return this.#solution;
   }
 
-  getPossibilites() {
-    return this.possibilites;
+  getPossibilities() {
+    return this.possibilities;
   }
 
   getMissingValuesFromArray(array: Array<number>) {
@@ -251,8 +248,8 @@ export default class Solver {
   }
 
   getBlock(nb: number) {
-    let startX = Math.floor(nb / 3) * 3;
-    let startY = (nb % 3) * 3;
+    const startX = Math.floor(nb / 3) * 3;
+    const startY = (nb % 3) * 3;
 
     let block = [];
 
@@ -289,38 +286,17 @@ export default class Solver {
   }
 
   isAllowedInRow(value: number, row: number) {
-    return this.isDuplicateInArray(value, this.#solution[row]);
+    return this.isDuplicateInArray(value, this.getRow(row));
   }
 
   isAllowedInColumn(value: number, col: number) {
-    const column = [...this.getSolution()].map((value) => value[col]);
-    return this.isDuplicateInArray(value, column);
+    return this.isDuplicateInArray(value, this.getColumn(col));
   }
 
   isAllowedInBlock(value: number, posX: number, posY: number) {
-    let nb = ((Math.floor(posX / 3)) + Math.floor(posY / 3));
-
-
-    console.log('BLOCKNB', nb, posX, posY)
-
-    // const index = posX * 9 + posY;
-
-    // // Find wich block the cell is a part of
-    // let currentBlockNb = Math.floor(posX / 3) + 1 + Math.floor(posY / 3) + 1;
-
-    // let startX = posX - (posX - 3 * Math.floor(posX / 3));
-    // let startY = Math.floor(posY / 3) * 3;
-
-    // let blockArray = [];
-
-    // for (let x = 0; x < 3; x++) {
-    //   for (let y = 0; y < 3; y++) {
-    //     blockArray.push(this.getSolution()[startX + x][startY + y]);
-    //   }
-    // }
-
+    const idx = Math.floor(posX / 3) * 2;
+    const nb = idx + Math.floor(posX / 3) + Math.floor(posY / 3);
     const block = this.getBlock(nb);
-
     return this.isDuplicateInArray(value, block);
   }
 
@@ -337,20 +313,20 @@ export default class Solver {
   }
 
   updatePossibilities(value: number, posX: number, posY: number) {
-    this.possibilites[posX][posY] = [];
-    this.updatePossibiltiesInRow(value, posX);
-    this.updatePossibiltiesInColumn(value, posY);
+    this.possibilities[posX][posY] = [];
+    this.updatePossibilitiesInRow(value, posX);
+    this.updatePossibilitiesInColumn(value, posY);
   }
 
-  updatePossibiltiesInRow(value: number, row: number) {
+  updatePossibilitiesInRow(value: number, row: number) {
     for (let nb = 0; nb < 9; nb++) {
-      this.possibilites[row][nb] = this.possibilites[row][nb].filter((x) => x !== value)
+      this.possibilities[row][nb] = this.possibilities[row][nb].filter((x) => x !== value)
     }
   }
 
-  updatePossibiltiesInColumn(value: number, col: number) {
+  updatePossibilitiesInColumn(value: number, col: number) {
     for(let x = 0; x < 9; x++) {
-      this.possibilites[x][col] = this.possibilites[x][col].filter( (x) => x !== value);
+      this.possibilities[x][col] = this.possibilities[x][col].filter( (x) => x !== value);
     }
   }
 
@@ -370,23 +346,23 @@ export default class Solver {
   // }
 
   // Check if there is only one possibility left for a number in the current column/row/block and insert it
-  checkAndinsertLastPossibilityForArray(possibilites: potentialValuesMap) {
-    Object.keys(possibilites).map((key) => {
-      if (possibilites[key].length === 1) {
-        const [posX, posY] = possibilites[key][0];
+  checkAndInsertLastPossibilityForArray(possibilities: potentialValuesMap) {
+    Object.keys(possibilities).map((key) => {
+      if (possibilities[key].length === 1) {
+        const [posX, posY] = possibilities[key][0];
         this.insertValueInCell(Number(key), posX, posY);
       }
     });
   }
 
-  hasArrayPairs(array: Array<number>, possibilites: potentialValuesMap) {
-    if (Object.keys(possibilites).length < 3) return;
+  hasArrayPairs(array: Array<number>, possibilities: potentialValuesMap) {
+    if (Object.keys(possibilities).length < 3) return;
 
-    const temparray = Object.keys(possibilites).map((key) => {
+    const temparray = Object.keys(possibilities).map((key) => {
       console.log(key);
-      console.log(possibilites[key]);
+      console.log(possibilities[key]);
       {
-        values: possibilites[key];
+        values: possibilities[key];
       }
     });
     let pairs = [];
@@ -398,7 +374,7 @@ export default class Solver {
 
     const missingValues = this.getMissingValuesFromArray(row);
 
-    let missingValuesPossibilites: potentialValuesMap = {};
+    let missingValuesPossibilities: potentialValuesMap = {};
 
     const currentPosX = rowNb;
     let valueIndex = 0;
@@ -413,13 +389,13 @@ export default class Solver {
         if (this.isAllowedInBlock(value, currentPosX, currentPosY)) {
           if (this.isCellEmpty(currentPosX, currentPosY)) {
             if (this.isAllowedInColumn(value, currentPosY)) {
-              if (missingValuesPossibilites[value]) {
-                missingValuesPossibilites[value] = [
-                  ...missingValuesPossibilites[value],
+              if (missingValuesPossibilities[value]) {
+                missingValuesPossibilities[value] = [
+                  ...missingValuesPossibilities[value],
                   [currentPosX, currentPosY],
                 ];
               } else {
-                missingValuesPossibilites[value] = [[currentPosX, currentPosY]];
+                missingValuesPossibilities[value] = [[currentPosX, currentPosY]];
               }
 
               allowedValues.push({ column: currentPosY, value: value });
@@ -444,7 +420,7 @@ export default class Solver {
       valueIndex++;
     }
 
-    this.checkAndinsertLastPossibilityForArray(missingValuesPossibilites);
+    this.checkAndInsertLastPossibilityForArray(missingValuesPossibilities);
 
     if (this.isArrayMissingOne(row)) {
       console.log(`Inserted by isArrayMissingOne row ${rowNb}`);
@@ -454,7 +430,7 @@ export default class Solver {
         row.indexOf(0),
       );
     }
-    this.hasArrayPairs(row, missingValuesPossibilites);
+    this.hasArrayPairs(row, missingValuesPossibilities);
   }
 
   checkColumn(columnNb: number) {
@@ -463,7 +439,7 @@ export default class Solver {
 
     const missingValues = this.getMissingValuesFromArray(column);
 
-    let missingValuesPossibilites: potentialValuesMap = {};
+    let missingValuesPossibilities: potentialValuesMap = {};
 
     const currentPosY = columnNb;
     let valueIndex = 0;
@@ -477,13 +453,13 @@ export default class Solver {
         if (this.isAllowedInBlock(value, currentPosX, currentPosY)) {
           if (this.isCellEmpty(currentPosX, currentPosY)) {
             if (this.isAllowedInRow(value, currentPosX)) {
-              if (missingValuesPossibilites[value]) {
-                missingValuesPossibilites[value] = [
-                  ...missingValuesPossibilites[value],
+              if (missingValuesPossibilities[value]) {
+                missingValuesPossibilities[value] = [
+                  ...missingValuesPossibilities[value],
                   [currentPosX, currentPosY],
                 ];
               } else {
-                missingValuesPossibilites[value] = [[currentPosX, currentPosY]];
+                missingValuesPossibilities[value] = [[currentPosX, currentPosY]];
               }
               allowedValues.push({ row: currentPosX, value: value });
             }
@@ -506,7 +482,7 @@ export default class Solver {
       valueIndex++;
     }
 
-    this.checkAndinsertLastPossibilityForArray(missingValuesPossibilites);
+    this.checkAndInsertLastPossibilityForArray(missingValuesPossibilities);
 
     if (this.isArrayMissingOne(column)) {
       console.log(`Inserted by isArrayMissingOne column ${columnNb}`);
@@ -524,7 +500,7 @@ export default class Solver {
     const block = this.getBlock(blockNb);
     const missingValues = this.getMissingValuesFromArray(block);
 
-    let missingValuesPossibilites: potentialValuesMap = {};
+    let missingValuesPossibilities: potentialValuesMap = {};
     
     let startingX = Math.floor(blockNb / 3) * 3;
     let startingY = (blockNb % 3) * 3;
@@ -547,13 +523,13 @@ export default class Solver {
               this.isAllowedInRow(value, currentPosX) &&
               this.isAllowedInColumn(value, currentPosY)
             ) {
-              if (missingValuesPossibilites[value]) {
-                missingValuesPossibilites[value] = [
-                  ...missingValuesPossibilites[value],
+              if (missingValuesPossibilities[value]) {
+                missingValuesPossibilities[value] = [
+                  ...missingValuesPossibilities[value],
                   [currentPosX, currentPosY],
                 ];
               } else {
-                missingValuesPossibilites[value] = [[currentPosX, currentPosY]];
+                missingValuesPossibilities[value] = [[currentPosX, currentPosY]];
               }
               allowedValues.push({
                 row: currentPosX,
@@ -581,7 +557,7 @@ export default class Solver {
       valueIndex++;
     }
 
-    this.checkAndinsertLastPossibilityForArray(missingValuesPossibilites);
+    this.checkAndInsertLastPossibilityForArray(missingValuesPossibilities);
 
     if (this.isArrayMissingOne(block)) {
       console.log(`Inserted by isArrayMissingOne block ${blockNb}`);
