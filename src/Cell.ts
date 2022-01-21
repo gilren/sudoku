@@ -34,7 +34,7 @@ export default class Cell extends EventEmitter {
 
       cellElement.appendChild(markerElement);
     }
-    cellElement.appendChild(this.generateHelper());
+    // cellElement.appendChild(this.generateHelper());
     cellElement.addEventListener('mouseenter', (event: Event) =>
       this.handleCellMouseOver(event),
     );
@@ -108,8 +108,6 @@ export default class Cell extends EventEmitter {
     }
 
     this.emit('valueChanged', this.currentValue);
-
-    // cell.classList.add
   }
 
   private handleCellMouseOver(e: Event) {
@@ -126,11 +124,11 @@ export default class Cell extends EventEmitter {
     this.el.querySelector('.number-container').classList.add('text-solution');
     this.el.querySelector('.number-container').textContent = value.toString();
   }
-  
+
   setPossibilities(possibilities: Array<number>) {
-    const possibilitiesDOm = document.createElement('div')
-    possibilitiesDOm.classList.add('number-possibilities')
+    const possibilitiesDOm = document.createElement('div');
+    possibilitiesDOm.classList.add('number-possibilities');
     possibilitiesDOm.textContent = possibilities.toString();
-    this.el.querySelector('.number-container').appendChild(possibilitiesDOm) 
+    this.el.querySelector('.number-container').appendChild(possibilitiesDOm);
   }
 }

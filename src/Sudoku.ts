@@ -11,11 +11,10 @@ export default class Sudoku {
   constructor(el: HTMLElement) {
     this.el = el;
     this.cells = [];
-    this.originalMap = Sudokus.hard[0];
+    this.originalMap = Sudokus.hard[1];
 
     this.setCurrentMap(this.originalMap);
     this.display();
-    // console.log(this.getCurrentMap());
   }
 
   setCurrentMap(value: Array<Array<number>>) {
@@ -58,26 +57,19 @@ export default class Sudoku {
     this.el.classList.add('sudoku-grid');
     this.el.parentNode.appendChild(solveBtn);
     this.el.appendChild(fragment);
-
-    this.validate();
   }
 
-  displaySolution(solution: Array<Array<number>>, possibilities: Array<Array<Array<number>>>) {
+  displaySolution(solution: Array<Array<number>>) {
     const values = [].concat(...solution);
-    const possibilitiesValues = [].concat(...possibilities)
     this.cells.forEach((cell, index) => {
       const val = values[index];
       if (val !== 0) {
         cell.setValue(val);
       }
-      cell.setPossibilities(possibilitiesValues[index]);
-      
     });
   }
 
   handleCellValueChanged(value: number, cell: Cell) {
-    console.log(cell);
-    console.log(cell.coords);
     const updatedMap = [...this.getCurrentMap()];
     const { currentValue } = cell;
     const { x, y } = cell.coords;
@@ -89,10 +81,8 @@ export default class Sudoku {
 
   validate() {
     let errors = [];
-
     const solver = new Solver([...this.getCurrentMap()]);
     solver.solve();
-    const possibilities = solver.getPossibilities()
-    this.displaySolution(solver.getSolution(), possibilities);
+    this.displaySolution(solver.getSolution());
   }
 }
