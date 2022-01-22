@@ -10,14 +10,25 @@ body {
   justify-content: center;
   align-items: center;
   color: #989ea2;
+  font-size: 16px;
+  font-family: Source Sans Pro, Arial, sans-serif;
 }
 
-.sudoku {
+.sudoku-wrapper {
   width: 80vh;
   height: 80vh;
   margin: 0 auto;
+}
+
+.sudoku {
+  width: 100%;
+  height: 100%;
   border: 2px solid #989ea2;
   user-select: none;
+}
+
+.sudoku__info {
+  margin-bottom: 1em;
 }
 
 .sudoku-grid {
@@ -43,27 +54,8 @@ body {
   background: rgb(132, 140, 143, 0.3);
 }
 
-.sudoku-grid .cell:nth-child(3),
-.sudoku-grid .cell:nth-child(12),
-.sudoku-grid .cell:nth-child(21),
-.sudoku-grid .cell:nth-child(30),
-.sudoku-grid .cell:nth-child(39),
-.sudoku-grid .cell:nth-child(48),
-.sudoku-grid .cell:nth-child(57),
-.sudoku-grid .cell:nth-child(66),
-.sudoku-grid .cell:nth-child(75) {
-  border-right-color: rgba(152, 158, 162, 1);
-}
-
-.sudoku-grid .cell:nth-child(6),
-.sudoku-grid .cell:nth-child(15),
-.sudoku-grid .cell:nth-child(24),
-.sudoku-grid .cell:nth-child(33),
-.sudoku-grid .cell:nth-child(42),
-.sudoku-grid .cell:nth-child(51),
-.sudoku-grid .cell:nth-child(60),
-.sudoku-grid .cell:nth-child(69),
-.sudoku-grid .cell:nth-child(78) {
+.sudoku-grid .cell:nth-child(9n + 3),
+.sudoku-grid .cell:nth-child(9n + 6) {
   border-right-color: rgba(152, 158, 162, 1);
 }
 
@@ -75,10 +67,7 @@ body {
 .sudoku-grid .cell:nth-child(24),
 .sudoku-grid .cell:nth-child(25),
 .sudoku-grid .cell:nth-child(26),
-.sudoku-grid .cell:nth-child(27) {
-  border-bottom-color: rgba(152, 158, 162, 1);
-}
-
+.sudoku-grid .cell:nth-child(27),
 .sudoku-grid .cell:nth-child(46),
 .sudoku-grid .cell:nth-child(47),
 .sudoku-grid .cell:nth-child(48),
@@ -170,4 +159,25 @@ body {
 
 .cell:not(.cell-default) .text-solution {
   color: green;
+}
+
+.btn {
+  display: inline-block;
+  border: 1px solid rgb(132, 140, 143, 0.3);
+  background: transparent;
+  color: #989ea2;
+  font-size: 18px;
+  padding: 0.75em 1.75em;
+  cursor: pointer;
+  transition: all 250ms ease-in-out;
+}
+
+.btn:hover {
+  border-color: rgb(132, 140, 143, 0.8);
+  background: rgb(132, 140, 143, 0.05);
+}
+
+.btn-solve.--is-solved {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

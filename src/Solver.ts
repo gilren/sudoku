@@ -1,7 +1,6 @@
 export default class Solver {
   originalMap: Array<Array<number>>;
   #solution: Array<Array<number>>;
-  isSolved: boolean = false;
 
   constructor(originalMap: Array<Array<number>>) {
     this.#solution = [...originalMap];

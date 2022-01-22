@@ -7,6 +7,7 @@ export default class Sudoku {
   cells: Array<Cell>;
   originalMap: Array<Array<number>>;
   #currentMap: Array<Array<number>>;
+  isSolved: boolean = false;
 
   constructor(el: HTMLElement) {
     this.el = el;
@@ -50,12 +51,13 @@ export default class Sudoku {
 
     const solveBtn = document.createElement('button');
     solveBtn.textContent = 'Solve';
+    solveBtn.classList.add('btn', 'btn-solve');
     solveBtn.addEventListener('click', () => {
       this.validate();
     });
 
+    this.el.parentNode.querySelector('.sudoku__info').appendChild(solveBtn);
     this.el.classList.add('sudoku-grid');
-    this.el.parentNode.appendChild(solveBtn);
     this.el.appendChild(fragment);
   }
 
@@ -67,6 +69,7 @@ export default class Sudoku {
         cell.setValue(val);
       }
     });
+    this.el.parentNode.querySelector('.btn-solve').classList.add('--is-solved');
   }
 
   handleCellValueChanged(value: number, cell: Cell) {
@@ -80,9 +83,11 @@ export default class Sudoku {
   }
 
   validate() {
+    if (this.isSolved) return;
     let errors = [];
     const solver = new Solver([...this.getCurrentMap()]);
     solver.solve();
     this.displaySolution(solver.getSolution());
+    this.isSolved = true;
   }
 }
