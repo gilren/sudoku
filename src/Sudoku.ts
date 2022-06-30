@@ -6,24 +6,40 @@ export default class Sudoku {
   el: HTMLElement;
   cells: Array<Cell>;
   originalMap: Array<Array<number>>;
-  #currentMap: Array<Array<number>>;
+  currentMap: Array<Array<number>>;
   isSolved: boolean = false;
 
   constructor(el: HTMLElement) {
     this.el = el;
     this.cells = [];
-    this.originalMap = Sudokus.hard[1];
+    this.originalMap = Sudokus.hard[1].map((arr) => arr.slice());
 
-    this.setCurrentMap(this.originalMap);
+    this.setCurrentMap(Sudokus.hard[1].map((arr) => arr.slice()));
     this.display();
   }
 
   setCurrentMap(value: Array<Array<number>>) {
-    this.#currentMap = value;
+    this.currentMap = value;
+  }
+
+  getOriginalMap() {
+    return this.originalMap;
   }
 
   getCurrentMap() {
-    return this.#currentMap;
+    return this.currentMap;
+  }
+
+  validate() {
+    if (this.isSolved) return;
+    let errors = [];
+    const solver = new Solver(
+      this.getOriginalMap().map((arr) => arr.slice()),
+      this.getCurrentMap().map((arr) => arr.slice()),
+    );
+    solver.solve();
+    this.displaySolution(solver.getSolution());
+    this.isSolved = true;
   }
 
   display() {
@@ -31,17 +47,14 @@ export default class Sudoku {
 
     let fragment = new DocumentFragment();
 
-    for (let [index, val] of this.originalMap.entries()) {
-    }
-
     let id = 0;
     this.originalMap.forEach((row, x) => {
       row.forEach((cell, y) => {
         const cellItem = new Cell(cell, id, { x, y });
         const cellElement = cellItem.getCell();
 
-        cellItem.on('valueChanged', (value: number) =>
-          self.handleCellValueChanged(value, cellItem),
+        cellItem.on('valueChanged', () =>
+          self.handleCellValueChanged(cellItem),
         );
         self.cells.push(cellItem);
         fragment.appendChild(cellElement);
@@ -61,19 +74,8 @@ export default class Sudoku {
     this.el.appendChild(fragment);
   }
 
-  displaySolution(solution: Array<Array<number>>) {
-    const values = [].concat(...solution);
-    this.cells.forEach((cell, index) => {
-      const val = values[index];
-      if (val !== 0) {
-        cell.setValue(val);
-      }
-    });
-    this.el.parentNode.querySelector('.btn-solve').classList.add('--is-solved');
-  }
-
-  handleCellValueChanged(value: number, cell: Cell) {
-    const updatedMap = [...this.getCurrentMap()];
+  handleCellValueChanged(cell: Cell) {
+    const updatedMap = this.getCurrentMap().map((arr) => arr.slice());
     const { currentValue } = cell;
     const { x, y } = cell.coords;
 
@@ -82,12 +84,14 @@ export default class Sudoku {
     this.setCurrentMap(updatedMap);
   }
 
-  validate() {
-    if (this.isSolved) return;
-    let errors = [];
-    const solver = new Solver([...this.getCurrentMap()]);
-    solver.solve();
-    this.displaySolution(solver.getSolution());
-    this.isSolved = true;
+  displaySolution(solution: Array<Array<number>>) {
+    const values = [].concat(...solution);
+    this.cells.forEach((cell, index) => {
+      const val = values[index];
+      if (val !== 0) {
+        cell.setSolutionValue(val);
+      }
+    });
+    this.el.parentNode.querySelector('.btn-solve').classList.add('--is-solved');
   }
 }

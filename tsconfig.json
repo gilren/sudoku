@@ -5,6 +5,8 @@
       "~*": ["./*"]
     }
   },
-  "include": ["src/**/**"],
+  "resolveJsonModule": true,
+  "esModuleInterop": true,
+  "include": ["src"],
   "exclude": [".git", "node_modules"]
 }

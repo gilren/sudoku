@@ -1,25 +1,21 @@
 export default class Solver {
   originalMap: Array<Array<number>>;
-  #solution: Array<Array<number>>;
+  currentMap: Array<Array<number>>;
+  solution: Array<Array<number>>;
 
-  constructor(originalMap: Array<Array<number>>) {
-    this.#solution = [...originalMap];
+  constructor(
+    originalMap: Array<Array<number>>,
+    currentMap: Array<Array<number>>,
+  ) {
+    this.solution = originalMap.map((arr) => arr.slice());
   }
 
   getSolution() {
-    return this.#solution;
+    return this.solution;
   }
 
   isDuplicateInArray(value: number, array: Array<number>) {
     return [...array].filter((x) => x === value).length < 1;
-  }
-
-  isValuePresentdInCell(value: number, posX: number, posY: number) {
-    return (
-      this.isValuePresentdInBlock(value, posX, posY) &&
-      this.isValuePresentdInRow(value, posX) &&
-      this.isValuePresentdInColumn(value, posY)
-    );
   }
 
   isValuePresentdInRow(value: number, row: number) {
@@ -39,7 +35,7 @@ export default class Solver {
     const startX = regionSize * Math.floor(posX / regionSize);
     const startY = regionSize * Math.floor(posY / regionSize);
 
-    let block = [];
+    let block = [] as Array<number>;
 
     for (let x = 0; x < 3; x++) {
       for (let y = 0; y < 3; y++) {
@@ -51,6 +47,7 @@ export default class Solver {
   }
 
   solve() {
+    // console.table(this.solution);
     this.canSolveSudokuFromCell(0, 0, this.getSolution());
   }
 

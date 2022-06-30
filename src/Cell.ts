@@ -10,6 +10,7 @@ export default class Cell extends EventEmitter {
 
   el: HTMLDivElement;
   currentValue: number = 0;
+  solutionValue: number = 0;
   id: number;
   coords: CoordsType;
 
@@ -21,10 +22,13 @@ export default class Cell extends EventEmitter {
 
     const cellElement = document.createElement('div');
     const numberElement = document.createElement('div');
+    const numberElementSolution = document.createElement('div');
     cellElement.id = id.toString();
     cellElement.classList.add('cell');
     numberElement.classList.add('number-container');
     numberElement.textContent = '';
+    numberElementSolution.classList.add('number-container--solution');
+    numberElementSolution.textContent = '';
 
     if (value !== 0) {
       cellElement.classList.add('cell-default');
@@ -43,6 +47,7 @@ export default class Cell extends EventEmitter {
     );
 
     cellElement.appendChild(numberElement);
+    cellElement.appendChild(numberElementSolution);
     this.el = cellElement;
   }
 
@@ -101,9 +106,8 @@ export default class Cell extends EventEmitter {
       this.currentValue = 0;
     } else {
       cell.classList.add('has-one-marker');
-      cell.querySelector(
-        '.number-container',
-      ).textContent = this.markers[0].toString();
+      cell.querySelector('.number-container').textContent =
+        this.markers[0].toString();
       this.currentValue = this.markers[0];
     }
 
@@ -123,6 +127,15 @@ export default class Cell extends EventEmitter {
     this.currentValue = value;
     this.el.querySelector('.number-container').classList.add('text-solution');
     this.el.querySelector('.number-container').textContent = value.toString();
+  }
+
+  setSolutionValue(value: number) {
+    this.currentValue = value;
+    this.el
+      .querySelector('.number-container--solution')
+      .classList.add('text-solution');
+    this.el.querySelector('.number-container--solution').textContent =
+      value.toString();
   }
 
   setPossibilities(possibilities: Array<number>) {
