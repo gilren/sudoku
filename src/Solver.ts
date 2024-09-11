@@ -18,18 +18,18 @@ export default class Solver {
     return [...array].filter((x) => x === value).length < 1;
   }
 
-  isValuePresentdInRow(value: number, row: number) {
+  isValuePresentInRow(value: number, row: number) {
     return this.isDuplicateInArray(value, this.getSolution()[row]);
   }
 
-  isValuePresentdInColumn(value: number, col: number) {
+  isValuePresentInColumn(value: number, col: number) {
     return this.isDuplicateInArray(
       value,
       this.getSolution().map((value) => value[col]),
     );
   }
 
-  isValuePresentdInBlock(value: number, posX: number, posY: number): Boolean {
+  isValuePresentInBlock(value: number, posX: number, posY: number): Boolean {
     let regionSize = 3;
 
     const startX = regionSize * Math.floor(posX / regionSize);
@@ -83,15 +83,15 @@ export default class Solver {
   }
 
   canPlaceValue(valueToPlace: number, row: number, col: number) {
-    if (!this.isValuePresentdInColumn(valueToPlace, col)) {
+    if (!this.isValuePresentInColumn(valueToPlace, col)) {
       return false;
     }
 
-    if (!this.isValuePresentdInRow(valueToPlace, row)) {
+    if (!this.isValuePresentInRow(valueToPlace, row)) {
       return false;
     }
 
-    if (!this.isValuePresentdInBlock(valueToPlace, row, col)) {
+    if (!this.isValuePresentInBlock(valueToPlace, row, col)) {
       return false;
     }
 
