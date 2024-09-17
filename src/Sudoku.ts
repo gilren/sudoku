@@ -5,6 +5,10 @@ import { SudokuNumber } from './types';
 
 export default class Sudoku {
   el: HTMLElement;
+  wrapper: HTMLElement;
+  infos: HTMLElement;
+  solveBtn: HTMLButtonElement;
+  sudokuGrid: HTMLElement;
   cells: Array<Cell>;
   readonly originalMap: ReadonlyArray<ReadonlyArray<SudokuNumber>>;
   currentMap: Array<Array<SudokuNumber>>;
@@ -12,13 +16,17 @@ export default class Sudoku {
 
   constructor(el: HTMLElement) {
     this.el = el;
+    this.wrapper = document.createElement('div');
+    this.infos = document.createElement('div');
+    this.solveBtn = document.createElement('button');
+    this.sudokuGrid = document.createElement('div');
 
     this.cells = [];
     this.originalMap = Sudokus.extreme[0].map((arr) =>
       Object.freeze([...arr]),
     ) as ReadonlyArray<ReadonlyArray<SudokuNumber>>;
 
-    this.setCurrentMap(Sudokus.hard[1].map((arr) => arr.slice()));
+    this.currentMap = this.originalMap.map((arr) => [...arr]);
     this.display();
   }
 
@@ -36,8 +44,21 @@ export default class Sudoku {
 
   display() {
     const self = this;
+    const fragment = new DocumentFragment();
 
-    let fragment = new DocumentFragment();
+    this.wrapper.classList.add('sudoku');
+
+    this.infos.classList.add('sudoku__infos');
+    this.solveBtn.textContent = 'Solve';
+    this.solveBtn.classList.add('btn', 'btn-solve');
+
+    this.solveBtn.addEventListener('click', () => {
+      this.validate();
+    });
+
+    this.infos.appendChild(this.solveBtn);
+
+    this.sudokuGrid.classList.add('sudoku__grid');
 
     let id = 0;
     this.originalMap.forEach((row, x) => {
@@ -45,24 +66,17 @@ export default class Sudoku {
         const cellItem = new Cell(cell, id, { x, y });
         const cellElement = cellItem.getCell();
 
-        cellItem.on('valueChanged', () =>
-          self.handleCellValueChanged(cellItem),
-        );
         self.cells.push(cellItem);
-        fragment.appendChild(cellElement);
+        self.sudokuGrid.appendChild(cellElement);
         id++;
       });
     });
 
-    const solveBtn = document.createElement('button');
-    solveBtn.textContent = 'Solve';
-    solveBtn.classList.add('btn', 'btn-solve');
-    solveBtn.addEventListener('click', () => {
-      this.validate();
-    });
+    this.wrapper.appendChild(this.infos);
 
-    this.el.parentNode.querySelector('.sudoku__info').appendChild(solveBtn);
-    this.el.classList.add('sudoku-grid');
+    this.wrapper.appendChild(this.sudokuGrid);
+    fragment.appendChild(this.wrapper);
+
     this.el.appendChild(fragment);
   }
 
@@ -79,14 +93,13 @@ export default class Sudoku {
 
   displaySolution(solution: Array<Array<SudokuNumber>>) {
     const values = solution.flat();
-  displaySolution(solution: Array<Array<number>>) {
-    const values = [].concat(...solution);
+
     this.cells.forEach((cell, index) => {
       const val = values[index];
-      if (val !== 0) {
-        cell.setSolutionValue(val);
+      if (!cell.isDefault) {
+        cell.showSolution(val);
       }
     });
-    this.el.parentNode.querySelector('.btn-solve').classList.add('--is-solved');
+    this.solveBtn.classList.add('--is-solved');
   }
 }

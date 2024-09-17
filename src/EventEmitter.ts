@@ -13,7 +13,7 @@ export default class EventEmitter {
   }
   emit(channel, ...args) {
     if (Array.isArray(this.events[channel])) {
-      this.events[channel].forEach((cb) => cb.apply(null, args));
+  this.events[channel].forEach((cb) => cb.apply(null, args));
     }
   }
 }

@@ -56,7 +56,7 @@ body {
 }
 
 .cell {
-  border: 1px solid rgba(152, 158, 162, 0.25);
+  border: 1px solid rgba(152, 158, 162, 0.2);
   font-size: 20px;
   text-align: center;
   /* display: flex;
@@ -69,32 +69,32 @@ body {
 
 .cell.cell-default {
   color: #989ea2;
-  background: rgb(132, 140, 143, 0.3);
+  background: rgb(132, 140, 143, 0.2);
 }
 
-.sudoku-grid .cell:nth-child(9n + 3),
-.sudoku-grid .cell:nth-child(9n + 6) {
+.sudoku__grid .cell:nth-child(9n + 3),
+.sudoku__grid .cell:nth-child(9n + 6) {
   border-right-color: rgba(152, 158, 162, 1);
 }
 
-.sudoku-grid .cell:nth-child(19),
-.sudoku-grid .cell:nth-child(20),
-.sudoku-grid .cell:nth-child(21),
-.sudoku-grid .cell:nth-child(22),
-.sudoku-grid .cell:nth-child(23),
-.sudoku-grid .cell:nth-child(24),
-.sudoku-grid .cell:nth-child(25),
-.sudoku-grid .cell:nth-child(26),
-.sudoku-grid .cell:nth-child(27),
-.sudoku-grid .cell:nth-child(46),
-.sudoku-grid .cell:nth-child(47),
-.sudoku-grid .cell:nth-child(48),
-.sudoku-grid .cell:nth-child(49),
-.sudoku-grid .cell:nth-child(50),
-.sudoku-grid .cell:nth-child(51),
-.sudoku-grid .cell:nth-child(52),
-.sudoku-grid .cell:nth-child(53),
-.sudoku-grid .cell:nth-child(54) {
+.sudoku__grid .cell:nth-child(19),
+.sudoku__grid .cell:nth-child(20),
+.sudoku__grid .cell:nth-child(21),
+.sudoku__grid .cell:nth-child(22),
+.sudoku__grid .cell:nth-child(23),
+.sudoku__grid .cell:nth-child(24),
+.sudoku__grid .cell:nth-child(25),
+.sudoku__grid .cell:nth-child(26),
+.sudoku__grid .cell:nth-child(27),
+.sudoku__grid .cell:nth-child(46),
+.sudoku__grid .cell:nth-child(47),
+.sudoku__grid .cell:nth-child(48),
+.sudoku__grid .cell:nth-child(49),
+.sudoku__grid .cell:nth-child(50),
+.sudoku__grid .cell:nth-child(51),
+.sudoku__grid .cell:nth-child(52),
+.sudoku__grid .cell:nth-child(53),
+.sudoku__grid .cell:nth-child(54) {
   border-bottom-color: rgba(152, 158, 162, 1);
 }
 
@@ -166,6 +166,7 @@ body {
   left: 0;
   z-index: 1;
   bottom: 0;
+  opacity: 1;
 }
 
 .number-container--solution {
@@ -180,6 +181,7 @@ body {
   left: 0;
   z-index: 1;
   bottom: 0;
+  color: green;
 }
 
 /*#989EA2 
@@ -193,10 +195,6 @@ body {
   left: 5px;
   font-size: 12px;
   color: tomato;
-}
-
-.cell:not(.cell-default) .text-solution {
-  color: green;
 }
 
 .btn {

@@ -34,9 +34,19 @@ export default class Cell extends EventEmitter {
       cellElement.classList.add('cell-default');
       numberElement.textContent = value.toString();
     } else {
-      const markerElement = this.generateMarkers();
+      const markersElement = document.createElement('div');
+      markersElement.classList.add('marker-container');
+      for (let i = 1; i < 10; i++) {
+        const marker = document.createElement('span');
+        marker.textContent = i.toString();
+        marker.classList.add('marker');
+        markersElement.appendChild(marker);
+      }
+      markersElement.addEventListener('click', (event: Event) =>
+        this.handleMarkerClick(event),
+      );
 
-      cellElement.appendChild(markerElement);
+      cellElement.appendChild(markersElement);
     }
 
     // cellElement.appendChild(this.generateHelpers());
@@ -56,27 +66,13 @@ export default class Cell extends EventEmitter {
     return this.el;
   }
 
-  private generateMarkers() {
-    const markersElement = document.createElement('div');
-    markersElement.classList.add('marker-container');
-    for (let i = 1; i < 10; i++) {
-      const marker = document.createElement('span');
-      marker.textContent = i.toString();
-      marker.classList.add('marker');
-      markersElement.appendChild(marker);
-    }
-    markersElement.addEventListener('click', (event: Event) =>
-      this.handleMarkerClick(event),
-    );
-
-    return markersElement;
-  }
-
-  private generateHelper() {
+  private generateHelpers() {
     const helperElement = document.createElement('span');
     helperElement.classList.add('helper');
-    helperElement.textContent =
-      this.id.toString() + ' [' + this.coords.x + ',' + this.coords.y + ']';
+    helperElement.textContent = `
+    ${this.id.toString()} 
+    [${this.coords.x},  ${this.coords.y}] 
+    - ${this.currentValue.toString()}`;
 
     return helperElement;
   }
@@ -116,12 +112,12 @@ export default class Cell extends EventEmitter {
   }
 
   private handleCellMouseOver(e: Event) {
-    const cell = e.target as HTMLElement;
-    cell.classList.add('cell-hover');
+    const target = e.currentTarget as HTMLElement;
+    target.classList.add('cell-hover');
   }
   private handleCellMouseOut(e: Event) {
-    const cell = e.target as HTMLElement;
-    cell.classList.remove('cell-hover');
+    const target = e.currentTarget as HTMLElement;
+    target.classList.remove('cell-hover');
   }
 
   setValue(value: SudokuNumber) {
