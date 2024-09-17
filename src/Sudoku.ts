@@ -5,10 +5,10 @@ import { SudokuNumber } from './types';
 
 export default class Sudoku {
   el: HTMLElement;
-  wrapper: HTMLElement;
-  infos: HTMLElement;
+  wrapper: HTMLDivElement;
+  infos: HTMLDivElement;
   solveBtn: HTMLButtonElement;
-  sudokuGrid: HTMLElement;
+  sudokuGrid: HTMLDivElement;
   cells: Array<Cell>;
   readonly originalMap: ReadonlyArray<ReadonlyArray<SudokuNumber>>;
   currentMap: Array<Array<SudokuNumber>>;
@@ -22,7 +22,7 @@ export default class Sudoku {
     this.sudokuGrid = document.createElement('div');
 
     this.cells = [];
-    this.originalMap = Sudokus.extreme[0].map((arr) =>
+    this.originalMap = Sudokus.easy[0].map((arr) =>
       Object.freeze([...arr]),
     ) as ReadonlyArray<ReadonlyArray<SudokuNumber>>;
 
@@ -40,6 +40,8 @@ export default class Sudoku {
     solver.solve();
     this.displaySolution(solver.solution);
     this.isSolved = true;
+
+    console.log('hello');
   }
 
   display() {
@@ -66,6 +68,8 @@ export default class Sudoku {
         const cellItem = new Cell(cell, id, { x, y });
         const cellElement = cellItem.getCell();
 
+        cellItem.on('valueChanged', () => self.handleCellValueChange(cellItem));
+
         self.cells.push(cellItem);
         self.sudokuGrid.appendChild(cellElement);
         id++;
@@ -80,14 +84,12 @@ export default class Sudoku {
     this.el.appendChild(fragment);
   }
 
-  handleCellValueChanged(cell: Cell) {
-    const updatedMap = this.currentMap.map((arr) => [...arr]);
+  handleCellValueChange(cell: Cell) {
     const { currentValue } = cell;
     const { x, y } = cell.coords;
 
-    updatedMap[x][y] = currentValue;
+    this.currentMap[x][y] = currentValue;
 
-    this.currentMap = updatedMap;
     // console.table(this.currentMap);
   }
 

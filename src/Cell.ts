@@ -7,14 +7,15 @@ interface CoordsType {
 }
 
 export default class Cell extends EventEmitter {
-  markers: Array<SudokuNumber> = [];
-
   el: HTMLDivElement;
+  numberElement: HTMLDivElement;
+  markersElement: HTMLDivElement | null = null;
+
+  markers: Array<SudokuNumber> = [];
   currentValue: SudokuNumber = 0;
-  solutionValue: SudokuNumber = 0;
   id: number;
   coords: CoordsType;
-  isDefault: Boolean;
+  isDefault: boolean = false;
 
   constructor(value: SudokuNumber, id: number, coords: CoordsType) {
     super();
@@ -23,43 +24,42 @@ export default class Cell extends EventEmitter {
 
     this.coords = coords;
 
-    const cellElement = document.createElement('div');
-    const numberElement = document.createElement('div');
-    cellElement.id = id.toString();
-    cellElement.classList.add('cell');
-    numberElement.classList.add('number-container');
+    this.el = document.createElement('div');
+    this.numberElement = document.createElement('div');
+
+    this.el.id = id.toString();
+    this.el.classList.add('cell');
+    this.numberElement.classList.add('number-container');
 
     if (value !== 0) {
       this.isDefault = true;
-      cellElement.classList.add('cell-default');
-      numberElement.textContent = value.toString();
+      this.el.classList.add('cell-default');
+      this.numberElement.textContent = value.toString();
     } else {
-      const markersElement = document.createElement('div');
-      markersElement.classList.add('marker-container');
+      this.markersElement = document.createElement('div');
+      this.markersElement.classList.add('marker-container');
       for (let i = 1; i < 10; i++) {
         const marker = document.createElement('span');
         marker.textContent = i.toString();
         marker.classList.add('marker');
-        markersElement.appendChild(marker);
+        this.markersElement.appendChild(marker);
       }
-      markersElement.addEventListener('click', (event: Event) =>
+      this.markersElement.addEventListener('click', (event: Event) =>
         this.handleMarkerClick(event),
       );
 
-      cellElement.appendChild(markersElement);
+      this.el.appendChild(this.markersElement);
     }
 
-    // cellElement.appendChild(this.generateHelpers());
-    cellElement.addEventListener('mouseenter', (event: Event) =>
+    this.el.appendChild(this.generateHelpers());
+    this.el.addEventListener('mouseenter', (event: Event) =>
       this.handleCellMouseOver(event),
     );
-    cellElement.addEventListener('mouseleave', (event: Event) =>
+    this.el.addEventListener('mouseleave', (event: Event) =>
       this.handleCellMouseOut(event),
     );
 
-    cellElement.appendChild(numberElement);
-
-    this.el = cellElement;
+    this.el.appendChild(this.numberElement);
   }
 
   public getCell() {
@@ -72,7 +72,8 @@ export default class Cell extends EventEmitter {
     helperElement.textContent = `
     ${this.id.toString()} 
     [${this.coords.x},  ${this.coords.y}] 
-    - ${this.currentValue.toString()}`;
+    `;
+    // - ${this.currentValue.toString()}
 
     return helperElement;
   }
@@ -88,23 +89,21 @@ export default class Cell extends EventEmitter {
 
   private handleMarkerClick(e: Event) {
     const target = e.target as HTMLElement;
+
     if (target.classList.contains('marker-container')) return;
     const markerValue = Number(target.textContent);
-    if (0 > markerValue || markerValue > 9) return;
-
-    const cell = target.parentElement.parentElement;
+    if (1 > markerValue || markerValue > 9) return;
 
     target.classList.toggle('selected');
-    this.toggleMarker(markerValue);
+    this.toggleMarker(markerValue as SudokuNumber);
 
     if (this.markers.length !== 1) {
-      cell.classList.remove('has-one-marker');
-      cell.querySelector('.number-container').textContent = '';
+      this.el.classList.remove('has-one-marker');
+      this.numberElement.textContent = '';
       this.currentValue = 0;
     } else {
-      cell.classList.add('has-one-marker');
-      cell.querySelector('.number-container').textContent =
-        this.markers[0].toString();
+      this.el.classList.add('has-one-marker');
+      this.numberElement.textContent = this.markers[0].toString();
       this.currentValue = this.markers[0];
     }
 
@@ -122,8 +121,8 @@ export default class Cell extends EventEmitter {
 
   setValue(value: SudokuNumber) {
     this.currentValue = value;
-    this.el.querySelector('.number-container').classList.add('text-solution');
-    this.el.querySelector('.number-container').textContent = value.toString();
+    this.numberElement.classList.add('text-solution');
+    this.numberElement.textContent = value.toString();
   }
 
   showSolution(value: SudokuNumber) {
@@ -133,12 +132,5 @@ export default class Cell extends EventEmitter {
     this.currentValue = value;
     numberElementSolution.textContent = value.toString();
     this.el.appendChild(numberElementSolution);
-  }
-
-  setPossibilities(possibilities: Array<SudokuNumber>) {
-    const possibilitiesDOm = document.createElement('div');
-    possibilitiesDOm.classList.add('number-possibilities');
-    possibilitiesDOm.textContent = possibilities.toString();
-    this.el.querySelector('.number-container').appendChild(possibilitiesDOm);
   }
 }
