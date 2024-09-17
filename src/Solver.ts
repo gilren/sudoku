@@ -21,11 +21,10 @@ export default class Solver {
   solve(): Array<Array<SudokuNumber>> | null {
     const board = this.originalMap.map((arr) => [...arr]);
 
-  solve() {
-    let row = 0;
-    let col = 0;
-    const board = this.solution;
-    const length = board.length;
+    if (!this.validateBoard(board)) {
+      console.error('Invalid Sudoku board configuration.');
+      return null;
+    }
 
     if (this.solution !== null) return this.solution;
 
@@ -132,11 +131,29 @@ export default class Solver {
       result: 'valid',
     };
   }
-          return false;
+
+  validateBoard(board: Array<Array<SudokuNumber>>): boolean {
+    for (let row = 0; row < board.length; row++) {
+      for (let col = 0; col < board[row].length; col++) {
+        const value = board[row][col];
+
+        // Ignore empty cells (0)
+        if (value !== 0) {
+          // Temporarily set the current cell to 0 to avoid self-check
+          board[row][col] = 0;
+
+          // Check if the value can be placed in this cell's row, column, and block
+          if (!this.canPlaceValue(value, row, col, board)) {
+            // Restore the value and return false (invalid board)
+            board[row][col] = value;
+            return false;
+          }
+
+          // Restore the value after the check
+          board[row][col] = value;
         }
       }
     }
-
     return true;
   }
 }
