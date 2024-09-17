@@ -1,98 +1,87 @@
+import { SudokuNumber } from './types';
+
 export default class Solver {
-  originalMap: Array<Array<number>>;
-  currentMap: Array<Array<number>>;
-  solution: Array<Array<number>>;
+  originalMap: ReadonlyArray<ReadonlyArray<SudokuNumber>>;
+  currentMap: Array<Array<SudokuNumber>>;
+  solution: Array<Array<SudokuNumber>>;
 
   constructor(
-    originalMap: Array<Array<number>>,
-    currentMap: Array<Array<number>>,
+    originalMap: ReadonlyArray<ReadonlyArray<SudokuNumber>>,
+    currentMap: Array<Array<SudokuNumber>>,
   ) {
-    this.solution = originalMap.map((arr) => arr.slice());
-  }
-
-  getSolution() {
-    return this.solution;
-  }
-
-  isDuplicateInArray(value: number, array: Array<number>) {
-    return [...array].filter((x) => x === value).length < 1;
-  }
-
-  isValuePresentdInRow(value: number, row: number) {
-    return this.isDuplicateInArray(value, this.getSolution()[row]);
-  }
-
-  isValuePresentdInColumn(value: number, col: number) {
-    return this.isDuplicateInArray(
-      value,
-      this.getSolution().map((value) => value[col]),
-    );
-  }
-
-  isValuePresentdInBlock(value: number, posX: number, posY: number): Boolean {
-    let regionSize = 3;
-
-    const startX = regionSize * Math.floor(posX / regionSize);
-    const startY = regionSize * Math.floor(posY / regionSize);
-
-    let block = [] as Array<number>;
-
-    for (let x = 0; x < 3; x++) {
-      for (let y = 0; y < 3; y++) {
-        block.push(this.getSolution()[startX + x][startY + y]);
-      }
-    }
-
-    return this.isDuplicateInArray(value, block);
+    this.originalMap = originalMap;
+    this.currentMap = currentMap;
+    this.solution = originalMap.map((arr) => [...arr]);
   }
 
   solve() {
-    // console.table(this.solution);
-    this.canSolveSudokuFromCell(0, 0, this.getSolution());
+    let row = 0;
+    let col = 0;
+    const board = this.solution;
+    const length = board.length;
+
+    const solveFromCell = (
+      row: number,
+      col: number,
+    ): Array<Array<SudokuNumber>> | boolean => {
+      // If we reach the end of the column, move to the next row
+      if (col === length) {
+        col = 0;
+        row++;
+      }
+
+      // The base case: the entire board is filled correctly
+      if (row === length) {
+        return board;
+      }
+
+      // If the current cell is already filled, move to the next cell
+      if (board[row][col] !== 0) {
+        return solveFromCell(row, col + 1);
+      }
+
+      for (let value = 1 as SudokuNumber; value <= board.length; value++) {
+        if (this.canPlaceValue(value, row, col)) {
+          board[row][col] = value;
+
+          // Recursively try to solve the rest of the board
+          const solve = solveFromCell(row, col + 1);
+          if (solve !== false) return solve;
+        }
+
+        // Backtrack: reset the cell to 0 and try the next value
+        board[row][col] = 0;
+      }
+
+      return false;
+    };
+
+    solveFromCell(row, col);
   }
 
-  canSolveSudokuFromCell(
-    row: number,
-    col: number,
-    board: Array<Array<number>>,
-  ) {
-    if (col === board[row].length) {
-      col = 0;
-      row++;
+  canPlaceValue(value: number, row: number, col: number): boolean {
+    const board = this.solution;
+    const length = board.length;
+
+    // Can place in column & row
+    for (let i = 0; i < length; i++) {
+      if (board[i][col] === value || board[row][i] === value) {
+        return false;
+      }
     }
 
-    if (row === board.length) {
-      return true;
-    }
+    // Can place in block
+    const regionSize = Math.sqrt(board.length);
 
-    if (board[row][col] != 0) {
-      return this.canSolveSudokuFromCell(row, col + 1, board);
-    }
+    const startX = regionSize * Math.floor(row / regionSize);
+    const startY = regionSize * Math.floor(col / regionSize);
 
-    for (let value = 1; value <= board.length; value++) {
-      let valueToPlace = value;
-
-      if (this.canPlaceValue(valueToPlace, row, col)) {
-        board[row][col] = valueToPlace;
-        if (this.canSolveSudokuFromCell(row, col + 1, board)) {
-          return true;
+    for (let x = 0; x < regionSize; x++) {
+      for (let y = 0; y < regionSize; y++) {
+        if (board[startX + x][startY + y] === value) {
+          return false;
         }
       }
-      board[row][col] = 0;
-    }
-  }
-
-  canPlaceValue(valueToPlace: number, row: number, col: number) {
-    if (!this.isValuePresentdInColumn(valueToPlace, col)) {
-      return false;
-    }
-
-    if (!this.isValuePresentdInRow(valueToPlace, row)) {
-      return false;
-    }
-
-    if (!this.isValuePresentdInBlock(valueToPlace, row, col)) {
-      return false;
     }
 
     return true;

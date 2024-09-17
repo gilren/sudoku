@@ -1,4 +1,5 @@
 import EventEmitter from './EventEmitter';
+import { SudokuNumber } from './types';
 
 interface CoordsType {
   x: number;
@@ -6,31 +7,30 @@ interface CoordsType {
 }
 
 export default class Cell extends EventEmitter {
-  markers: Array<number> = [];
+  markers: Array<SudokuNumber> = [];
 
   el: HTMLDivElement;
-  currentValue: number = 0;
-  solutionValue: number = 0;
+  currentValue: SudokuNumber = 0;
+  solutionValue: SudokuNumber = 0;
   id: number;
   coords: CoordsType;
+  isDefault: Boolean;
 
-  constructor(value: number, id: number, coords: CoordsType) {
+  constructor(value: SudokuNumber, id: number, coords: CoordsType) {
     super();
     this.id = id;
+    this.currentValue = value;
 
     this.coords = coords;
 
     const cellElement = document.createElement('div');
     const numberElement = document.createElement('div');
-    const numberElementSolution = document.createElement('div');
     cellElement.id = id.toString();
     cellElement.classList.add('cell');
     numberElement.classList.add('number-container');
-    numberElement.textContent = '';
-    numberElementSolution.classList.add('number-container--solution');
-    numberElementSolution.textContent = '';
 
     if (value !== 0) {
+      this.isDefault = true;
       cellElement.classList.add('cell-default');
       numberElement.textContent = value.toString();
     } else {
@@ -38,7 +38,8 @@ export default class Cell extends EventEmitter {
 
       cellElement.appendChild(markerElement);
     }
-    // cellElement.appendChild(this.generateHelper());
+
+    // cellElement.appendChild(this.generateHelpers());
     cellElement.addEventListener('mouseenter', (event: Event) =>
       this.handleCellMouseOver(event),
     );
@@ -47,7 +48,7 @@ export default class Cell extends EventEmitter {
     );
 
     cellElement.appendChild(numberElement);
-    cellElement.appendChild(numberElementSolution);
+
     this.el = cellElement;
   }
 
@@ -80,7 +81,7 @@ export default class Cell extends EventEmitter {
     return helperElement;
   }
 
-  private toggleMarker(value: number) {
+  private toggleMarker(value: SudokuNumber) {
     const currentIndexOfValue = this.markers.indexOf(value);
     if (currentIndexOfValue !== -1) {
       this.markers.splice(currentIndexOfValue, 1);
@@ -123,22 +124,22 @@ export default class Cell extends EventEmitter {
     cell.classList.remove('cell-hover');
   }
 
-  setValue(value: number) {
+  setValue(value: SudokuNumber) {
     this.currentValue = value;
     this.el.querySelector('.number-container').classList.add('text-solution');
     this.el.querySelector('.number-container').textContent = value.toString();
   }
 
-  setSolutionValue(value: number) {
+  showSolution(value: SudokuNumber) {
+    const numberElementSolution = document.createElement('div');
+    numberElementSolution.classList.add('number-container');
+    numberElementSolution.classList.add('number-container--solution');
     this.currentValue = value;
-    this.el
-      .querySelector('.number-container--solution')
-      .classList.add('text-solution');
-    this.el.querySelector('.number-container--solution').textContent =
-      value.toString();
+    numberElementSolution.textContent = value.toString();
+    this.el.appendChild(numberElementSolution);
   }
 
-  setPossibilities(possibilities: Array<number>) {
+  setPossibilities(possibilities: Array<SudokuNumber>) {
     const possibilitiesDOm = document.createElement('div');
     possibilitiesDOm.classList.add('number-possibilities');
     possibilitiesDOm.textContent = possibilities.toString();
