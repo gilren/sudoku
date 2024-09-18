@@ -1,7 +1,15 @@
 import Cell from './Cell';
+import {
+  DIFFICULTY_EASY,
+  DIFFICULTY_EASY,
+  DIFFICULTY_EXPERT,
+  DIFFICULTY_HARD,
+  DIFFICULTY_MASTER,
+  DIFFICULTY_MEDIUM,
+} from './constants';
 import Solver from './Solver';
-import Sudokus from './sudokus.json';
-import { SudokuNumber } from './types';
+
+import { Board, Difficulty } from './types';
 
 export default class Sudoku {
   el: HTMLElement;
@@ -26,8 +34,32 @@ export default class Sudoku {
       Object.freeze([...arr]),
     ) as ReadonlyArray<ReadonlyArray<SudokuNumber>>;
 
-    this.currentMap = this.originalMap.map((arr) => [...arr]);
+    this.init(DIFFICULTY_EASY);
+  }
+
+  async init(difficulty: Difficulty) {
+    await this.load(difficulty);
     this.display();
+  }
+
+  async load(difficulty: Difficulty): Promise<void> {
+    try {
+      const sudokus = (await import(`../sudokus/${difficulty}.json`)).default;
+
+      this.baseBoard = sudokus[Math.floor(Math.random() * sudokus.length)].map(
+        (arr: Array<number>) => [...arr],
+      );
+
+      this.currentBoard = this.baseBoard;
+
+      console.log(`Loading Sudoku with difficulty ${difficulty}`);
+    } catch (error) {
+      console.error(
+        `Error loading Sudoku for difficulty ${difficulty}:`,
+        error,
+      );
+      throw error;
+    }
   }
 
   validate() {
@@ -38,8 +70,8 @@ export default class Sudoku {
       this.currentMap.map((arr) => [...arr]),
     );
     solver.solve();
-    this.displaySolution(solver.solution);
-    this.isSolved = true;
+      this.displaySolution(solver.solution);
+      this.isSolved = true;
 
     console.log('hello');
   }
