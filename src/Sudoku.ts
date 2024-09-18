@@ -1,7 +1,6 @@
 import Cell from './Cell';
 import {
   DIFFICULTY_EASY,
-  DIFFICULTY_EASY,
   DIFFICULTY_EXPERT,
   DIFFICULTY_HARD,
   DIFFICULTY_MASTER,
@@ -16,23 +15,32 @@ export default class Sudoku {
   wrapper: HTMLDivElement;
   infos: HTMLDivElement;
   solveBtn: HTMLButtonElement;
-  sudokuGrid: HTMLDivElement;
+  newGameBtn: HTMLButtonElement;
+  timerEl: HTMLDivElement;
+  grid: HTMLDivElement;
   cells: Array<Cell>;
-  readonly originalMap: ReadonlyArray<ReadonlyArray<SudokuNumber>>;
-  currentMap: Array<Array<SudokuNumber>>;
-  isSolved: boolean = false;
+  baseBoard: Board;
+  currentBoard: Board;
+  timer: NodeJS.Timeout | null;
+  isSolved: boolean;
+  hasGameStarted: boolean;
 
   constructor(el: HTMLElement) {
+    this.isSolved = false;
+    this.hasGameStarted = false;
     this.el = el;
     this.wrapper = document.createElement('div');
     this.infos = document.createElement('div');
     this.solveBtn = document.createElement('button');
-    this.sudokuGrid = document.createElement('div');
+    this.newGameBtn = document.createElement('button');
+    this.timerEl = document.createElement('div');
+    this.grid = document.createElement('div');
+
+    this.baseBoard = null;
+    this.currentBoard = null;
 
     this.cells = [];
-    this.originalMap = Sudokus.easy[0].map((arr) =>
-      Object.freeze([...arr]),
-    ) as ReadonlyArray<ReadonlyArray<SudokuNumber>>;
+    this.timer = null;
 
     this.init(DIFFICULTY_EASY);
   }
@@ -63,20 +71,22 @@ export default class Sudoku {
   }
 
   validate() {
+    if (!this.baseBoard) return;
     if (this.isSolved) return;
+    this.stopTimer();
     let errors = [];
-    const solver = new Solver(
-      this.originalMap,
-      this.currentMap.map((arr) => [...arr]),
-    );
+    const solver = new Solver(this.baseBoard);
     solver.solve();
+    if (solver.solution) {
       this.displaySolution(solver.solution);
       this.isSolved = true;
+    }
 
     console.log('hello');
   }
 
   display() {
+    if (!this.baseBoard) return;
     const self = this;
     const fragment = new DocumentFragment();
 
@@ -90,12 +100,23 @@ export default class Sudoku {
       this.validate();
     });
 
-    this.infos.appendChild(this.solveBtn);
+    this.newGameBtn.textContent = 'New';
+    this.newGameBtn.classList.add('btn', 'btn-timer');
 
-    this.sudokuGrid.classList.add('sudoku__grid');
+    // this.newGameBtn.addEventListener('click', () => {
+    //   this.startTimer();
+    // });
+
+    this.timerEl.classList.add('timer');
+
+    this.infos.appendChild(this.solveBtn);
+    this.infos.appendChild(this.newGameBtn);
+    this.infos.appendChild(this.timerEl);
+
+    this.grid.classList.add('sudoku__grid');
 
     let id = 0;
-    this.originalMap.forEach((row, x) => {
+    this.baseBoard.forEach((row, x) => {
       row.forEach((cell, y) => {
         const cellItem = new Cell(cell, id, { x, y });
         const cellElement = cellItem.getCell();
@@ -103,29 +124,66 @@ export default class Sudoku {
         cellItem.on('valueChanged', () => self.handleCellValueChange(cellItem));
 
         self.cells.push(cellItem);
-        self.sudokuGrid.appendChild(cellElement);
+        self.grid.appendChild(cellElement);
         id++;
       });
     });
 
     this.wrapper.appendChild(this.infos);
 
-    this.wrapper.appendChild(this.sudokuGrid);
+    this.wrapper.appendChild(this.grid);
     fragment.appendChild(this.wrapper);
 
     this.el.appendChild(fragment);
   }
 
-  handleCellValueChange(cell: Cell) {
-    const { currentValue } = cell;
-    const { x, y } = cell.coords;
+  startTimer() {
+    const startTime = new Date().getTime();
 
-    this.currentMap[x][y] = currentValue;
+    this.timerEl.textContent = '';
 
-    // console.table(this.currentMap);
+    const updateTimer = () => {
+      let now = new Date().getTime();
+      let elapsedTime = now - startTime;
+      let seconds = Math.floor((elapsedTime / 1000) % 60);
+      let minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+      let hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
+      let text = '';
+      if (hours > 0) {
+        text += `${hours}H`;
+      }
+      if (minutes > 0) {
+        text += `${minutes}M`;
+      }
+      text += `${seconds}S`;
+
+      this.timerEl.textContent = text;
+    };
+
+    updateTimer();
+
+    this.timer = setInterval(updateTimer, 1000);
   }
 
-  displaySolution(solution: Array<Array<SudokuNumber>>) {
+  stopTimer() {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  handleCellValueChange(cell: Cell) {
+    if (!this.currentBoard) return;
+    if (!this.hasGameStarted) {
+      this.startTimer();
+      this.hasGameStarted = true;
+    }
+    const { currentValue } = cell;
+
+    const { x, y } = cell.coords;
+    this.currentBoard[x][y] = currentValue;
+
+    // console.table(this.currentBoard);
+  }
+
+  displaySolution(solution: Array<Array<number>>) {
     const values = solution.flat();
 
     this.cells.forEach((cell, index) => {

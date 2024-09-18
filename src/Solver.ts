@@ -1,46 +1,35 @@
-import { CanPlaceResult, SudokuNumber } from './types';
+import { BLOCK_SIZE, BOARD_SIZE } from './constants';
+import { Board } from './types';
 
 export default class Solver {
-  originalMap: ReadonlyArray<ReadonlyArray<SudokuNumber>>;
-  currentMap: Array<Array<SudokuNumber>>;
-  solution: Array<Array<SudokuNumber>> | null;
-  length: number;
-  regionSize: number;
+  board: Array<Array<number>>;
+  solution: Board;
 
-  constructor(
-    originalMap: ReadonlyArray<ReadonlyArray<SudokuNumber>>,
-    currentMap: Array<Array<SudokuNumber>>,
-  ) {
-    this.originalMap = originalMap;
-    this.currentMap = currentMap;
+  constructor(board: Array<Array<number>>) {
+    this.board = board;
     this.solution = null;
-    this.length = originalMap.length;
-    this.regionSize = Math.sqrt(this.length);
   }
 
-  solve(): Array<Array<SudokuNumber>> | null {
-    const board = this.originalMap.map((arr) => [...arr]);
+  solve() {
+    let board = this.board.map((arr) => [...arr]);
 
-    if (!this.validateBoard(board)) {
-      console.error('Invalid Sudoku board configuration.');
-      return null;
+    // To edit when add cache
+    if (this.solution !== null) {
+      console.error('Sudoku was already solved.');
+      return;
     }
 
-    if (this.solution !== null) return this.solution;
-
-    const solveFromCell = (
-      row: number,
-      col: number,
-    ): Array<Array<SudokuNumber>> | null => {
+    const solveFromCell = (row: number, col: number): boolean => {
       // If we reach the end of the column, move to the next row
-      if (col === this.length) {
+      if (col === BOARD_SIZE) {
         col = 0;
         row++;
       }
 
+      // Solved
       // The base case: the entire board is filled correctly
-      if (row === this.length) {
-        return board;
+      if (row === BOARD_SIZE) {
+        return true;
       }
 
       // If the current cell is already filled, move to the next cell
@@ -48,29 +37,26 @@ export default class Solver {
         return solveFromCell(row, col + 1);
       }
 
-      for (let value = 1 as SudokuNumber; value <= board.length; value++) {
-        const canPlaceValue = this.canPlaceValue(value, row, col, board);
-        console.log(canPlaceValue);
-        if (canPlaceValue.result === 'valid') {
-          board[row][col] = value;
-
-          // Recursively try to solve the rest of the board
-          const solve = solveFromCell(row, col + 1);
-          if (solve !== null) return solve;
+      // Try every possible value for specific cell
+      for (let num = 1; num <= BOARD_SIZE; num++) {
+        const canPlaceValue = this.canPlaceValue(num, row, col, board);
+        if (canPlaceValue) {
+          board[row][col] = num;
+          if (solveFromCell(row, col + 1)) {
+            return true;
+          }
         }
 
         // Backtrack: reset the cell to 0 and try the next value
         board[row][col] = 0;
       }
 
-      return null;
+      return false;
     };
 
-    const solution = solveFromCell(0, 0);
-
-    if (solution !== null) {
-      this.solution = solution;
-      return this.solution;
+    if (solveFromCell(0, 0)) {
+      console.log('Sudoku was solved successfully');
+      this.solution = board; // Check has been made in solveFromCell
     }
   }
 
@@ -78,38 +64,30 @@ export default class Solver {
     value: number,
     row: number,
     col: number,
-    board: Array<Array<SudokuNumber>>,
-  ): CanPlaceResult {
+    board: Array<Array<number>>,
+  ): boolean {
     // Can place in block
-    const startX = this.regionSize * Math.floor(row / this.regionSize);
-    const startY = this.regionSize * Math.floor(col / this.regionSize);
+    const startX = BLOCK_SIZE * Math.floor(row / BLOCK_SIZE);
+    const startY = BLOCK_SIZE * Math.floor(col / BLOCK_SIZE);
 
-    for (let x = 0; x < this.regionSize; x++) {
-      for (let y = 0; y < this.regionSize; y++) {
+    for (let x = 0; x < BLOCK_SIZE; x++) {
+      for (let y = 0; y < BLOCK_SIZE; y++) {
         // console.log(`Checking block: {${x},${y}} - Value: ${value}`);
         if (board[startX + x][startY + y] === value) {
           // console.log(`Duplicate found in block at {${startX + x}, ${startY + y}}`);
-          return {
-            result: 'duplicate',
-            row: startX + x,
-            col: startY + y,
-          };
+          return false;
         }
       }
     }
 
     // Can place in row & column
-    for (let i = 0; i < this.length; i++) {
+    for (let i = 0; i < BOARD_SIZE; i++) {
       // Skip cells that overlap with the block in the column
       if (i < startX || i > startX + 2) {
         // console.log(`Checking column: {${i},${col}} - Value: ${value}`);
         if (board[i][col] === value) {
           // console.log(`Duplicate found in column at {${i}, ${col}}`);
-          return {
-            result: 'duplicate',
-            row: i,
-            col: col,
-          };
+          return false;
         }
       }
 
@@ -118,42 +96,11 @@ export default class Solver {
         // console.log(`Checking row: {${row}, ${i}} - Value: ${value}`);
         if (board[row][i] === value) {
           // console.log(`Duplicate found in row at {${row}, ${i}}`);
-          return {
-            result: 'duplicate',
-            row: row,
-            col: i,
-          };
+          return false;
         }
       }
     }
 
-    return {
-      result: 'valid',
-    };
-  }
-
-  validateBoard(board: Array<Array<SudokuNumber>>): boolean {
-    for (let row = 0; row < board.length; row++) {
-      for (let col = 0; col < board[row].length; col++) {
-        const value = board[row][col];
-
-        // Ignore empty cells (0)
-        if (value !== 0) {
-          // Temporarily set the current cell to 0 to avoid self-check
-          board[row][col] = 0;
-
-          // Check if the value can be placed in this cell's row, column, and block
-          if (!this.canPlaceValue(value, row, col, board)) {
-            // Restore the value and return false (invalid board)
-            board[row][col] = value;
-            return false;
-          }
-
-          // Restore the value after the check
-          board[row][col] = value;
-        }
-      }
-    }
     return true;
   }
 }

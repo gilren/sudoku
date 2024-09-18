@@ -1,5 +1,21 @@
-export type SudokuNumber = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+import {
+  DIFFICULTY_EASY,
+  DIFFICULTY_HARD,
+  DIFFICULTY_MEDIUM,
+  DIFFICULTY_EXPERT,
+  DIFFICULTY_MASTER,
+} from './constants';
 
-export type CanPlaceResult =
-  | { result: 'valid' }
-  | { result: 'duplicate'; row: number; col: number };
+export type Difficulty =
+  | typeof DIFFICULTY_EASY
+  | typeof DIFFICULTY_MEDIUM
+  | typeof DIFFICULTY_HARD
+  | typeof DIFFICULTY_EXPERT
+  | typeof DIFFICULTY_MASTER;
+
+export type Board = Array<Array<number>> | null;
+
+export type Coords = {
+  x: number;
+  y: number;
+};
