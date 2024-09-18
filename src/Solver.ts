@@ -20,24 +20,23 @@ export default class Solver {
     }
 
     const solveFromCell = (row: number, col: number): boolean => {
-      // If we reach the end of the column, move to the next row
+      // If we reach the end of a column, move to the next row.
       if (col === BOARD_SIZE) {
         col = 0;
         row++;
       }
 
-      // Solved
-      // The base case: the entire board is filled correctly
+      // If we reach the end of the board, the puzzle is solved
       if (row === BOARD_SIZE) {
         return true;
       }
 
-      // If the current cell is already filled, move to the next cell
+      // If the cell is filled, move to the next
       if (board[row][col] !== 0) {
         return solveFromCell(row, col + 1);
       }
 
-      // Try every possible value for specific cell
+      // Try each possible value for the empty cell
       for (let num = 1; num <= BOARD_SIZE; num++) {
         const canPlaceValue = this.canPlaceValue(num, row, col, board);
         if (canPlaceValue) {
@@ -46,8 +45,7 @@ export default class Solver {
             return true;
           }
         }
-
-        // Backtrack: reset the cell to 0 and try the next value
+        // Backtrack: reset cell to 0 and try the next value
         board[row][col] = 0;
       }
 
@@ -56,7 +54,7 @@ export default class Solver {
 
     if (solveFromCell(0, 0)) {
       console.log('Sudoku was solved successfully');
-      this.solution = board; // Check has been made in solveFromCell
+      this.solution = board;
     }
   }
 
