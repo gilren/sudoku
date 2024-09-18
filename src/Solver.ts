@@ -83,7 +83,7 @@ export default class Solver {
     // Can place in row & column
     for (let i = 0; i < BOARD_SIZE; i++) {
       // Skip cells that overlap with the block in the column
-      if (i < startX || i > startX + 2) {
+      if (i < startX || i > startX + (BOARD_SIZE - 1)) {
         // console.log(`Checking column: {${i},${col}} - Value: ${value}`);
         if (board[i][col] === value) {
           // console.log(`Duplicate found in column at {${i}, ${col}}`);
@@ -92,7 +92,7 @@ export default class Solver {
       }
 
       // Skip cells that overlap with the block in the row
-      if (i < startY || i > startY + 2) {
+      if (i < startY || i > startY + (BOARD_SIZE - 1)) {
         // console.log(`Checking row: {${row}, ${i}} - Value: ${value}`);
         if (board[row][i] === value) {
           // console.log(`Duplicate found in row at {${row}, ${i}}`);
