@@ -11,16 +11,18 @@ import Solver from './Solver';
 import { Board, Difficulty } from './types';
 
 export default class Sudoku {
-  el: HTMLElement;
+  containerEl: HTMLElement;
   wrapper: HTMLDivElement;
-  infos: HTMLDivElement;
+  infosContainer: HTMLDivElement;
   solveBtn: HTMLButtonElement;
   newGameBtn: HTMLButtonElement;
   timerEl: HTMLDivElement;
   grid: HTMLDivElement;
-  cells: Array<Cell>;
-  baseBoard: Board;
-  currentBoard: Board;
+
+  initialBoard: Board;
+  activeBoard: Board;
+  gridCells: Array<Cell>;
+
   timer: NodeJS.Timeout | null;
   isSolved: boolean;
   hasGameStarted: boolean;
@@ -28,18 +30,19 @@ export default class Sudoku {
   constructor(el: HTMLElement) {
     this.isSolved = false;
     this.hasGameStarted = false;
-    this.el = el;
+
+    this.containerEl = el;
     this.wrapper = document.createElement('div');
-    this.infos = document.createElement('div');
+    this.infosContainer = document.createElement('div');
     this.solveBtn = document.createElement('button');
     this.newGameBtn = document.createElement('button');
     this.timerEl = document.createElement('div');
     this.grid = document.createElement('div');
 
-    this.baseBoard = null;
-    this.currentBoard = null;
+    this.initialBoard = null;
+    this.activeBoard = null;
+    this.gridCells = [];
 
-    this.cells = [];
     this.timer = null;
 
     this.init(DIFFICULTY_EASY);
@@ -54,11 +57,11 @@ export default class Sudoku {
     try {
       const sudokus = (await import(`../sudokus/${difficulty}.json`)).default;
 
-      this.baseBoard = sudokus[Math.floor(Math.random() * sudokus.length)].map(
-        (arr: Array<number>) => [...arr],
-      );
+      this.initialBoard = sudokus[
+        Math.floor(Math.random() * sudokus.length)
+      ].map((arr: Array<number>) => [...arr]);
 
-      this.currentBoard = this.baseBoard;
+      this.activeBoard = this.initialBoard;
 
       console.log(`Loading Sudoku with difficulty ${difficulty}`);
     } catch (error) {
@@ -71,11 +74,11 @@ export default class Sudoku {
   }
 
   validate() {
-    if (!this.baseBoard) return;
+    if (!this.initialBoard) return;
     if (this.isSolved) return;
     this.stopTimer();
     let errors = [];
-    const solver = new Solver(this.baseBoard);
+    const solver = new Solver(this.initialBoard);
     solver.solve();
     if (solver.solution) {
       this.displaySolution(solver.solution);
@@ -86,13 +89,13 @@ export default class Sudoku {
   }
 
   display() {
-    if (!this.baseBoard) return;
+    if (!this.initialBoard) return;
     const self = this;
     const fragment = new DocumentFragment();
 
     this.wrapper.classList.add('sudoku');
 
-    this.infos.classList.add('sudoku__infos');
+    this.infosContainer.classList.add('sudoku__infosContainer');
     this.solveBtn.textContent = 'Solve';
     this.solveBtn.classList.add('btn', 'btn-solve');
 
@@ -109,32 +112,32 @@ export default class Sudoku {
 
     this.timerEl.classList.add('timer');
 
-    this.infos.appendChild(this.solveBtn);
-    this.infos.appendChild(this.newGameBtn);
-    this.infos.appendChild(this.timerEl);
+    this.infosContainer.appendChild(this.solveBtn);
+    this.infosContainer.appendChild(this.newGameBtn);
+    this.infosContainer.appendChild(this.timerEl);
 
     this.grid.classList.add('sudoku__grid');
 
     let id = 0;
-    this.baseBoard.forEach((row, x) => {
+    this.initialBoard.forEach((row, x) => {
       row.forEach((cell, y) => {
         const cellItem = new Cell(cell, id, { x, y });
         const cellElement = cellItem.getCell();
 
         cellItem.on('valueChanged', () => self.handleCellValueChange(cellItem));
 
-        self.cells.push(cellItem);
+        self.gridCells.push(cellItem);
         self.grid.appendChild(cellElement);
         id++;
       });
     });
 
-    this.wrapper.appendChild(this.infos);
+    this.wrapper.appendChild(this.infosContainer);
 
     this.wrapper.appendChild(this.grid);
     fragment.appendChild(this.wrapper);
 
-    this.el.appendChild(fragment);
+    this.containerEl.appendChild(fragment);
   }
 
   startTimer() {
@@ -170,7 +173,7 @@ export default class Sudoku {
   }
 
   handleCellValueChange(cell: Cell) {
-    if (!this.currentBoard) return;
+    if (!this.activeBoard) return;
     if (!this.hasGameStarted) {
       this.startTimer();
       this.hasGameStarted = true;
@@ -178,15 +181,15 @@ export default class Sudoku {
     const { currentValue } = cell;
 
     const { x, y } = cell.coords;
-    this.currentBoard[x][y] = currentValue;
+    this.activeBoard[x][y] = currentValue;
 
-    // console.table(this.currentBoard);
+    // console.table(this.activeBoard);
   }
 
   displaySolution(solution: Array<Array<number>>) {
     const values = solution.flat();
 
-    this.cells.forEach((cell, index) => {
+    this.gridCells.forEach((cell, index) => {
       const val = values[index];
       if (!cell.isDefault) {
         cell.showSolution(val);

@@ -3,15 +3,16 @@ import { Coords } from './types';
 import { isSudokuCell } from './utils';
 
 export default class Cell extends EventEmitter {
+  el: HTMLDivElement;
+  numberEl: HTMLDivElement;
+  markersEl: HTMLDivElement | null;
+
   id: number;
   isDefault: boolean;
   currentValue: number;
   coords: Coords;
   markers: Array<number>;
 
-  el: HTMLDivElement;
-  numberEl: HTMLDivElement;
-  markersEl: HTMLDivElement | null;
   constructor(value: number, id: number, coords: Coords) {
     super();
 
@@ -49,7 +50,7 @@ export default class Cell extends EventEmitter {
       this.el.appendChild(this.markersEl);
     }
 
-    this.el.appendChild(this.generateHelpers());
+    // this.el.appendChild(this.generateHelpers());
     this.el.addEventListener('mouseenter', (event: MouseEvent) =>
       this.handleCellMouseOver(event),
     );
