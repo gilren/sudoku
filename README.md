@@ -30,8 +30,6 @@ npm run dev
 - [ ] **Undo/Redo System**: Implement an undo/redo feature to allow users to revert to previous game states.
 - [ ] **Add difficulty selector**: Add a selector that allow the player to change difficulty
 - [ ] **Add a restart, and new button**: Add a restart button to restart the game, add a new button to start a new game
-- [ ] **Puzzle Timer**: Add a timer that tracks how long the player takes to solve the puzzle.
-- [ ] **Add More sudokus**: Separate json files by difficulty and add more sudokus
 
 #### UI/UX Enhancements
 
