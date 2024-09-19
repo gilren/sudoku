@@ -11,13 +11,18 @@ export default class Solver {
   }
 
   solve() {
+    if (!this.isSudokuValid()) {
+      console.error('Sudoku is not valid.');
+      return;
+    }
     let board = this.board.map((arr) => [...arr]);
 
-    // To edit when add cache
     if (this.solution !== null) {
       console.error('Sudoku was already solved.');
       return;
     }
+
+    // console.log(board);
 
     const solveFromCell = (row: number, col: number): boolean => {
       // If we reach the end of a column, move to the next row.
@@ -81,7 +86,7 @@ export default class Solver {
     // Can place in row & column
     for (let i = 0; i < BOARD_SIZE; i++) {
       // Skip cells that overlap with the block in the column
-      if (i < startX || i > startX + (BOARD_SIZE - 1)) {
+      if (i < startX || i > startX + (BLOCK_SIZE - 1)) {
         // console.log(`Checking column: {${i},${col}} - Value: ${value}`);
         if (board[i][col] === value) {
           // console.log(`Duplicate found in column at {${i}, ${col}}`);
@@ -90,7 +95,7 @@ export default class Solver {
       }
 
       // Skip cells that overlap with the block in the row
-      if (i < startY || i > startY + (BOARD_SIZE - 1)) {
+      if (i < startY || i > startY + (BLOCK_SIZE - 1)) {
         // console.log(`Checking row: {${row}, ${i}} - Value: ${value}`);
         if (board[row][i] === value) {
           // console.log(`Duplicate found in row at {${row}, ${i}}`);
@@ -100,5 +105,21 @@ export default class Solver {
     }
 
     return true;
+  }
+
+  isSudokuValid(): boolean {
+    const board = this.board;
+    if (!board) return false;
+
+    let clues = 0;
+
+    for (let row of board) {
+      for (let cell of row) {
+        if (cell !== 0) clues++;
+        if (clues >= 17) return true;
+      }
+    }
+
+    return false;
   }
 }

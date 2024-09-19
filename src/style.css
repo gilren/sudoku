@@ -75,6 +75,10 @@ body {
   background: rgb(132, 140, 143, 0.2);
 }
 
+.cell.cell--invalid {
+  color: #fffaa0;
+}
+
 .sudoku__grid .cell:nth-child(9n + 3),
 .sudoku__grid .cell:nth-child(9n + 6) {
   border-right-color: rgba(152, 158, 162, 1);

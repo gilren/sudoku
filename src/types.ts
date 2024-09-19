@@ -19,3 +19,8 @@ export type Coords = {
   x: number;
   y: number;
 };
+
+export type Duplicate = {
+  value: number;
+  id: number;
+};

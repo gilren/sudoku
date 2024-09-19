@@ -1,5 +1,6 @@
 import Cell from './Cell';
 import {
+  BOARD_SIZE,
   DIFFICULTY_EASY,
   DIFFICULTY_EXPERT,
   DIFFICULTY_HARD,
@@ -8,20 +9,23 @@ import {
 } from './constants';
 import Solver from './Solver';
 
-import { Board, Difficulty } from './types';
+import { Board, Difficulty, Duplicate } from './types';
 
 export default class Sudoku {
   containerEl: HTMLElement;
   wrapper: HTMLDivElement;
   infosContainer: HTMLDivElement;
   solveBtn: HTMLButtonElement;
+  validateBtn: HTMLButtonElement;
   newGameBtn: HTMLButtonElement;
   timerEl: HTMLDivElement;
   grid: HTMLDivElement;
 
   initialBoard: Board;
   activeBoard: Board;
+  solutionBoard: Board;
   gridCells: Array<Cell>;
+  errors: Array<Duplicate> | null;
 
   timer: NodeJS.Timeout | null;
   isSolved: boolean;
@@ -35,13 +39,16 @@ export default class Sudoku {
     this.wrapper = document.createElement('div');
     this.infosContainer = document.createElement('div');
     this.solveBtn = document.createElement('button');
+    this.validateBtn = document.createElement('button');
     this.newGameBtn = document.createElement('button');
     this.timerEl = document.createElement('div');
     this.grid = document.createElement('div');
 
     this.initialBoard = null;
     this.activeBoard = null;
+    this.solutionBoard = null;
     this.gridCells = [];
+    this.errors = null;
 
     this.timer = null;
 
@@ -64,6 +71,7 @@ export default class Sudoku {
       this.activeBoard = this.initialBoard;
 
       console.log(`Loading Sudoku with difficulty ${difficulty}`);
+      this.getSolution();
     } catch (error) {
       console.error(
         `Error loading Sudoku for difficulty ${difficulty}:`,
@@ -73,19 +81,55 @@ export default class Sudoku {
     }
   }
 
-  validate() {
-    if (!this.initialBoard) return;
-    if (this.isSolved) return;
+  finish() {
     this.stopTimer();
-    let errors = [];
-    const solver = new Solver(this.initialBoard);
-    solver.solve();
-    if (solver.solution) {
-      this.displaySolution(solver.solution);
-      this.isSolved = true;
+  }
+
+  validate() {
+    if (!this.activeBoard || !this.solutionBoard) {
+      console.error('Active board or solution is null');
+      return;
     }
 
-    console.log('hello');
+    // reset grid states
+
+    this.errors = [];
+    for (let gridCell of this.gridCells) {
+      gridCell.el.classList.remove('cell--invalid');
+    }
+
+    let errors: Array<Duplicate> = [];
+
+    for (let x = 0; x < BOARD_SIZE; x++) {
+      for (let y = 0; y < BOARD_SIZE; y++) {
+        const current = this.activeBoard[x][y];
+        if (current === 0) continue;
+        if (current !== this.solutionBoard[x][y]) {
+          const error: Duplicate = {
+            value: current,
+            id: x * BOARD_SIZE + y,
+          };
+          errors.push(error);
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      this.errors = errors;
+
+      console.log(errors);
+
+      for (let duplicate of errors) {
+        const cell = this.gridCells.find((cell) => cell.id === duplicate.id);
+        if (cell) {
+          cell.el.classList.add('cell--invalid');
+        }
+      }
+
+      return console.error('Sudoku has errors');
+    } else {
+      return console.log('Sudoku is valid');
+    }
   }
 
   display() {
@@ -95,11 +139,18 @@ export default class Sudoku {
 
     this.wrapper.classList.add('sudoku');
 
-    this.infosContainer.classList.add('sudoku__infosContainer');
+    this.infosContainer.classList.add('sudoku__infos');
     this.solveBtn.textContent = 'Solve';
     this.solveBtn.classList.add('btn', 'btn-solve');
 
     this.solveBtn.addEventListener('click', () => {
+      this.displaySolution();
+    });
+
+    this.validateBtn.textContent = 'Validate';
+    this.validateBtn.classList.add('btn', 'btn-validate');
+
+    this.validateBtn.addEventListener('click', () => {
       this.validate();
     });
 
@@ -112,6 +163,7 @@ export default class Sudoku {
 
     this.timerEl.classList.add('timer');
 
+    this.infosContainer.appendChild(this.validateBtn);
     this.infosContainer.appendChild(this.solveBtn);
     this.infosContainer.appendChild(this.newGameBtn);
     this.infosContainer.appendChild(this.timerEl);
@@ -179,19 +231,37 @@ export default class Sudoku {
       this.hasGameStarted = true;
     }
     const { currentValue } = cell;
-
     const { x, y } = cell.coords;
+
+    cell.el.classList.remove('cell--invalid');
     this.activeBoard[x][y] = currentValue;
 
     // console.table(this.activeBoard);
   }
 
-  displaySolution(solution: Array<Array<number>>) {
-    const values = solution.flat();
+  getSolution() {
+    if (!this.initialBoard) {
+      console.error(`Unable to give solution since board is null`);
+      return;
+    }
+    const solver = new Solver(this.initialBoard);
+    solver.solve();
+
+    if (solver.solution) {
+      this.solutionBoard = solver.solution;
+      this.isSolved = true;
+    }
+  }
+
+  // Might need to modify the solution display, either keep the overlay or replace the values directly and play with classes
+  displaySolution() {
+    if (!this.solutionBoard) return;
+    this.stopTimer();
+    const values = this.solutionBoard.flat();
 
     this.gridCells.forEach((cell, index) => {
       const val = values[index];
-      if (!cell.isDefault) {
+      if (!cell.isDefault && cell.currentValue !== val) {
         cell.showSolution(val);
       }
     });
