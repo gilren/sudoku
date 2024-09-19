@@ -10,7 +10,7 @@ import {
 import Solver from './Solver';
 
 import { Board, Difficulty, Duplicate } from './types';
-import { createButton } from './utils';
+import { createButton, isDifficulty } from './utils';
 
 export default class Sudoku {
   containerEl: HTMLElement;
@@ -19,6 +19,7 @@ export default class Sudoku {
   solveBtn: HTMLButtonElement;
   validateBtn: HTMLButtonElement;
   newGameBtn: HTMLButtonElement;
+  difficultySelector: HTMLSelectElement;
   timerEl: HTMLDivElement;
   grid: HTMLDivElement;
 
@@ -44,6 +45,7 @@ export default class Sudoku {
     this.newGameBtn = document.createElement('button');
     this.timerEl = document.createElement('div');
     this.grid = document.createElement('div');
+    this.difficultySelector = document.createElement('select');
 
     this.initialBoard = null;
     this.activeBoard = null;
@@ -53,7 +55,7 @@ export default class Sudoku {
 
     this.timer = null;
 
-    this.init(DIFFICULTY_EASY);
+    this.init(this.getDifficulty());
   }
 
   async init(difficulty: Difficulty) {
@@ -87,6 +89,7 @@ export default class Sudoku {
   }
 
   validate() {
+    console.log('hello');
     if (!this.activeBoard || !this.solutionBoard) {
       console.error('Active board or solution is null');
       return;
@@ -140,29 +143,54 @@ export default class Sudoku {
 
     this.wrapper.classList.add('sudoku');
 
+    const options = [
+      DIFFICULTY_EASY,
+      DIFFICULTY_MEDIUM,
+      DIFFICULTY_HARD,
+      DIFFICULTY_EXPERT,
+      DIFFICULTY_MASTER,
+    ];
+
+    //Create and append the options
+    for (var i = 0; i < options.length; i++) {
+      const capitalized =
+        options[i].charAt(0).toUpperCase() + options[i].slice(1);
+      var option = document.createElement('option');
+      option.value = options[i];
+      option.text = capitalized;
+      this.difficultySelector.appendChild(option);
+    }
+
+    this.difficultySelector.value = this.getDifficulty();
+
+    this.difficultySelector.addEventListener('change', (e) => {
+      this.handleSelectChange(e);
+    });
+
     this.infosContainer.classList.add('sudoku__infos');
 
-    this.solveBtn = createButton(
-      this.solveBtn,
-      'Solve',
-      ['btn', 'btn-solve'],
-      this.displaySolution(),
-    );
+    this.solveBtn.textContent = 'Solve';
+    this.solveBtn.classList.add('btn', 'btn-solve');
 
-    this.validateBtn = createButton(
-      this.validateBtn,
-      'Validate',
-      ['btn', 'btn-validate'],
-      this.validate(),
-    );
+    this.solveBtn.addEventListener('click', () => {
+      this.displaySolution();
+    });
 
-    this.newGameBtn = createButton(this.newGameBtn, 'New', [
-      'btn',
-      'btn-timer',
-    ]);
+    this.validateBtn.textContent = 'Validate';
+    this.validateBtn.classList.add('btn', 'btn-validate');
+
+    this.validateBtn.addEventListener('click', () => {
+      this.validate();
+    });
+
+    this.newGameBtn.textContent = 'New';
+    this.newGameBtn.classList.add('btn', 'btn-timer');
+
+    this.newGameBtn.addEventListener('click', () => {});
 
     this.timerEl.classList.add('timer');
 
+    this.infosContainer.appendChild(this.difficultySelector);
     this.infosContainer.appendChild(this.validateBtn);
     this.infosContainer.appendChild(this.solveBtn);
     this.infosContainer.appendChild(this.newGameBtn);
@@ -237,6 +265,28 @@ export default class Sudoku {
     this.activeBoard[x][y] = currentValue;
 
     // console.table(this.activeBoard);
+  }
+
+  handleSelectChange(e: Event) {
+    if (!(e.currentTarget instanceof HTMLSelectElement)) return;
+    const value = e.currentTarget.value;
+
+    if (value && isDifficulty(value)) {
+      localStorage.setItem('difficulty', value);
+      console.log(`Switched difficulty to ${value}`);
+    }
+  }
+
+  getDifficulty(): Difficulty {
+    const difficulty = localStorage.getItem('difficulty');
+
+    if (difficulty && isDifficulty(difficulty)) return difficulty;
+
+    console.log(
+      `Difficulty is empty or invalid, setting to ${DIFFICULTY_EASY}`,
+    );
+    localStorage.setItem('difficulty', DIFFICULTY_EASY);
+    return DIFFICULTY_EASY;
   }
 
   getSolution() {

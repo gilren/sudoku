@@ -1,11 +1,12 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Source Sans Pro, Arial, sans-serif;
+  font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background: #1b2023;
+  color: #989ea2;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -18,13 +19,6 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-}
-
-body {
-  background: #1b2023;
-  color: #989ea2;
-  font-size: 16px;
-  font-family: Source Sans Pro, Arial, sans-serif;
 }
 
 #app {
@@ -138,6 +132,8 @@ body {
   opacity: 0.5;
   visibility: hidden;
   border-radius: 50%;
+  transition: color 250ms ease-in-out, opacity 250ms ease-in-out,
+    background-color 250ms ease-in-out;
 }
 
 .marker-container:hover .marker:hover {
@@ -202,6 +198,17 @@ body {
   left: 5px;
   font-size: 12px;
   color: tomato;
+}
+
+select {
+  display: inline-block;
+  border: 1px solid rgb(132, 140, 143, 0.3);
+  background: #1b2023;
+  color: #989ea2;
+  font-size: 18px;
+  padding: 0.75em 1em;
+  cursor: pointer;
+  transition: all 250ms ease-in-out;
 }
 
 .btn {
