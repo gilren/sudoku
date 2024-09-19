@@ -10,6 +10,7 @@ import {
 import Solver from './Solver';
 
 import { Board, Difficulty, Duplicate } from './types';
+import { createButton } from './utils';
 
 export default class Sudoku {
   containerEl: HTMLElement;
@@ -140,26 +141,25 @@ export default class Sudoku {
     this.wrapper.classList.add('sudoku');
 
     this.infosContainer.classList.add('sudoku__infos');
-    this.solveBtn.textContent = 'Solve';
-    this.solveBtn.classList.add('btn', 'btn-solve');
 
-    this.solveBtn.addEventListener('click', () => {
-      this.displaySolution();
-    });
+    this.solveBtn = createButton(
+      this.solveBtn,
+      'Solve',
+      ['btn', 'btn-solve'],
+      this.displaySolution(),
+    );
 
-    this.validateBtn.textContent = 'Validate';
-    this.validateBtn.classList.add('btn', 'btn-validate');
+    this.validateBtn = createButton(
+      this.validateBtn,
+      'Validate',
+      ['btn', 'btn-validate'],
+      this.validate(),
+    );
 
-    this.validateBtn.addEventListener('click', () => {
-      this.validate();
-    });
-
-    this.newGameBtn.textContent = 'New';
-    this.newGameBtn.classList.add('btn', 'btn-timer');
-
-    // this.newGameBtn.addEventListener('click', () => {
-    //   this.startTimer();
-    // });
+    this.newGameBtn = createButton(this.newGameBtn, 'New', [
+      'btn',
+      'btn-timer',
+    ]);
 
     this.timerEl.classList.add('timer');
 
