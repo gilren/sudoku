@@ -1,6 +1,6 @@
 import Solver from '../src/Solver';
 
-test('Solver solves an easy sudoku', () => {
+test('Solver can solve an easy sudoku', () => {
   const raw = [
     [0, 9, 0, 8, 6, 5, 2, 0, 0],
     [0, 0, 5, 0, 1, 2, 0, 6, 8],
@@ -30,4 +30,56 @@ test('Solver solves an easy sudoku', () => {
   const solution = solver.solution;
 
   expect(solution).toEqual(solved);
+});
+
+test('Solver should reject empty sudoku', () => {
+  const raw = [[]];
+
+  const solver = new Solver(raw);
+  solver.solve();
+  const solution = solver.solution;
+
+  expect(solution).toEqual(null);
+});
+
+test('Solver should reject 0 filled sudoku', () => {
+  const raw = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+
+  const solver = new Solver(raw);
+  solver.solve();
+  const solution = solver.solution;
+
+  expect(solution).toEqual(null);
+});
+
+test('Solver should reject less than 17 values sudoku', () => {
+  const raw = [
+    [0, 3, 0, 0, 4, 0, 0, 0, 5],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [6, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 3],
+    [0, 0, 0, 3, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [7, 4, 0, 0, 1, 0, 0, 9, 0],
+  ];
+
+  const solver = new Solver(raw);
+  solver.solve();
+  const solution = solver.solution;
+
+  expect(solution).toEqual(null);
 });
