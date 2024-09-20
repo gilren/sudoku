@@ -150,7 +150,7 @@ export default class UIManager {
         const cell = new Cell(cellValue, id, { x, y });
         const cellElement = this.createCellUI(cell);
 
-        cell.on('valueChanged', (info: object) => handleCellValueChange(info));
+        cell.on('saveAction', (info: object) => handleCellValueChange(info));
 
         gridCells.push(cell);
         this.grid.appendChild(cellElement);
@@ -165,7 +165,7 @@ export default class UIManager {
     let markersEl = null;
     valueEl.classList.add('number-container');
 
-    cellEl.id = cell.id.toString();
+    cellEl.id = 'cell-' + cell.id.toString();
 
     cellEl.classList.add('cell');
     if (cell.isDefault) {
@@ -207,10 +207,6 @@ export default class UIManager {
       cell.handleClick(e);
     });
 
-    cell.on('markersChanged', () => {
-      this.updateCellUI(cellElement, cell);
-    });
-
     cell.on('valueChanged', () => {
       this.updateCellUI(cellElement, cell);
     });
@@ -231,7 +227,7 @@ export default class UIManager {
   // }
 
   addInvalidIndicator(cell: Cell) {
-    this.grid.querySelector(`#${cell.id}`).classList.add('cell--invalid');
+    this.grid.querySelector(`#cell-${cell.id}`).classList.add('cell--invalid');
   }
 
   removeInvalidIndicator(cell: Cell) {

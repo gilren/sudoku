@@ -37,19 +37,12 @@ export default class Cell extends EventEmitter {
       markers.push(value);
     }
 
-    this.setValue(value, markers);
+    this.setValue(markers);
   }
 
-  setValue(value: number, markers: Array<number>, undo: boolean = false) {
-    const info = {
-      id: this.id,
-      oldValue: this.currentValue,
-      newValue: value,
-      oldMarkers: this.markers,
-      newMarkers: markers,
-    };
-
-    this.currentValue = value;
+  setValue(markers: Array<number>, undo: boolean = false) {
+    const oldvalue = this.currentValue;
+    const oldMarkers = this.markers;
     this.markers = markers;
 
     if (this.markers.length !== 1) {
@@ -58,10 +51,17 @@ export default class Cell extends EventEmitter {
       this.currentValue = this.markers[0];
     }
 
+    const info = {
+      id: this.id,
+      oldValue: oldvalue,
+      newValue: this.currentValue,
+      oldMarkers: oldMarkers,
+      newMarkers: this.markers,
+    };
+
     if (!undo) {
-      this.emit('valueChanged', info);
-    } else {
-      this.emit('markersChanged');
+      this.emit('saveAction', info);
     }
+    this.emit('valueChanged', info);
   }
 }

@@ -236,7 +236,7 @@ export default class Sudoku {
 
       this.activeBoard[cell.coords.x][cell.coords.y] = value;
 
-      cell.setValue(value, markers, true);
+      cell.setValue(markers, true);
     }
   }
 }
