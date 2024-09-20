@@ -26,9 +26,4 @@ npm run dev
 
 #### Gameplay Features
 
-- [ ] **Add a restart**: Add a restart button to restart the current game
-- [ ] **Add sudoku generation**: Add new sudoku generation on build time
-
-#### UI/UX Enhancements
-
-- [ ] **Animations**: Add simple animations.
+- [ ] **Add a end screen**: Add a end screen with timer recap

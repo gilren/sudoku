@@ -20,10 +20,12 @@ export default class Sudoku {
   timer: NodeJS.Timeout | null;
   isSolved: boolean;
   isLoading: boolean;
+  seed: number | null;
 
   constructor(el: HTMLElement) {
     this.isSolved = false;
     this.isLoading = false;
+    this.seed = null;
 
     this.initialBoard = null;
     this.activeBoard = null;
@@ -32,20 +34,19 @@ export default class Sudoku {
     this.errors = null;
 
     this.timer = null;
-
     this.uiManager = new UIManager(el);
     this.undoManager = new UndoManager();
     this.new();
   }
 
-  async new() {
+  async new(seed?: number) {
     if (this.isLoading) return;
     this.isLoading = true;
     try {
       this.reset();
       this.startTimer();
       this.uiManager.initializeUI();
-      await this.init(this.getDifficulty());
+      await this.load(seed);
     } finally {
       this.isLoading = false;
     }
@@ -60,40 +61,37 @@ export default class Sudoku {
     this.uiManager.clear();
   }
 
-  async init(difficulty: Difficulty) {
-    await this.load(difficulty);
-
-    this.gridCells = [];
-    this.uiManager.render(
-      this.initialBoard,
-      this.gridCells,
-      difficulty,
-      (info: object) => this.handleCellValueChange(info),
-    );
-
-    this.uiManager.onUndoKeyListener(() => this.undo());
-    this.uiManager.onNewClicked(() => this.new());
-    // this.uiManager.onSolveClicked(() =>
-    //   this.uiManager.displaySolution(this.solutionBoard, this.gridCells),
-    // );
-    this.uiManager.onValidateClicked(() => this.validate());
-    this.uiManager.onDifficultyChanged((newDifficulty) =>
-      this.changeDifficulty(newDifficulty),
-    );
-  }
-
-  async load(difficulty: Difficulty): Promise<void> {
+  async load(seed?: number): Promise<void> {
     try {
+      const difficulty = this.getDifficulty();
       const sudokus = (await import(`../sudokus/${difficulty}.json`)).default;
+      if (!seed) {
+        seed = Math.floor(Math.random() * sudokus.length);
+        this.seed = seed;
+      }
 
-      this.initialBoard = sudokus[
-        Math.floor(Math.random() * sudokus.length)
-      ].map((arr: Array<number>) => [...arr]);
+      this.initialBoard = sudokus[seed].map((arr: Array<number>) => [...arr]);
 
       this.activeBoard = this.initialBoard;
 
       console.log(`Loading Sudoku with difficulty ${difficulty}`);
       this.getSolution();
+
+      this.gridCells = [];
+      this.uiManager.render(
+        this.initialBoard,
+        this.gridCells,
+        difficulty,
+        (info: object) => this.handleCellValueChange(info),
+      );
+
+      this.uiManager.onUndoKeyListener(() => this.undo());
+      this.uiManager.onNewClicked(() => this.new());
+      this.uiManager.onRestartClicked(() => this.restart());
+      this.uiManager.onValidateClicked(() => this.validate());
+      this.uiManager.onDifficultyChanged((newDifficulty) =>
+        this.changeDifficulty(newDifficulty),
+      );
     } catch (error) {
       console.error(
         `Error loading Sudoku for difficulty ${difficulty}:`,
@@ -101,6 +99,12 @@ export default class Sudoku {
       );
       throw error;
     }
+  }
+
+  restart() {
+    console.log(this.seed);
+    if (!this.seed) return;
+    this.new(this.seed);
   }
 
   finish() {
@@ -197,6 +201,16 @@ export default class Sudoku {
     localStorage.setItem('difficulty', newDifficulty);
     this.reset();
     this.new();
+  }
+
+  getSeed(): string | null {
+    const seed = localStorage.getItem('seed');
+
+    if (seed && !isNaN(Number(seed))) {
+      return seed;
+    }
+
+    return null;
   }
 
   getDifficulty(): Difficulty {

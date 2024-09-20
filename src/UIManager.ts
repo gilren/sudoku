@@ -99,7 +99,7 @@ export default class UIManager {
     this.newGameBtn.addEventListener('click', callback);
   }
 
-  onrestartClicked(callback: () => void) {
+  onRestartClicked(callback: () => void) {
     this.restartBtnListener = callback;
     this.restartBtn.addEventListener('click', callback);
   }
