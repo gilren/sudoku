@@ -24,3 +24,9 @@ export type Duplicate = {
   value: number;
   id: number;
 };
+
+export type Action = {
+  id: number;
+  value: number;
+  markers: Array<number>;
+};

@@ -70,7 +70,8 @@ body {
 }
 
 .cell.cell--invalid {
-  color: #fffaa0;
+  color: rgb(255, 250, 160);
+  background: rgb(255, 250, 160, 0.2);
 }
 
 .sudoku__grid .cell:nth-child(9n + 3),
@@ -140,11 +141,11 @@ body {
   opacity: 1;
 }
 
-.has-one-marker .marker-container {
+.has-markers .marker-container {
   display: none;
 }
 
-.cell-hover.has-one-marker .marker-container {
+.cell-hover.has-markers .marker-container {
   display: grid;
 }
 
@@ -184,7 +185,8 @@ body {
   left: 0;
   z-index: 1;
   bottom: 0;
-  color: green;
+  color: rgb(180, 236, 180);
+  background: rgb(180, 236, 180, 0.2);
 }
 
 /*#989EA2
