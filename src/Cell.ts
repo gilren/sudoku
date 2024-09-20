@@ -54,6 +54,8 @@ export default class Cell extends EventEmitter {
 
     if (this.markers.length !== 1) {
       this.currentValue = 0;
+    } else {
+      this.currentValue = this.markers[0];
     }
 
     if (!undo) {

@@ -17,7 +17,6 @@ export default class UIManager {
   validateBtn: HTMLButtonElement;
   newGameBtn: HTMLButtonElement;
   undoBtn: HTMLButtonElement;
-  restartBtn: HTMLButtonElement;
   difficultySelector: HTMLSelectElement;
   timerEl: HTMLDivElement;
   grid: HTMLDivElement;
@@ -232,7 +231,7 @@ export default class UIManager {
   // }
 
   addInvalidIndicator(cell: Cell) {
-    this.grid.children.item(cell.id).classList.add('cell--invalid');
+    this.grid.querySelector(`#${cell.id}`).classList.add('cell--invalid');
   }
 
   removeInvalidIndicator(cell: Cell) {

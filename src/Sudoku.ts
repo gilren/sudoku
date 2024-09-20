@@ -1,5 +1,5 @@
-import Cell from './Cell';
 import { BOARD_SIZE, DIFFICULTY_EASY } from './constants';
+import Cell from './Cell';
 import Solver from './Solver';
 
 import { Action, Board, Difficulty, Duplicate } from './types';
