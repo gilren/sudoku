@@ -13,17 +13,14 @@ export default class UndoManager {
       this.stack.shift();
     }
     this.stack.push(action);
-    console.log('Stored action', action);
   }
 
   undo(): Action | undefined {
     if (this.stack.length === 0) {
       return undefined;
     }
-    console.log('stack before pop', this.stack);
-    const test = this.stack.pop();
-    console.log('stack after pop', this.stack);
-    return test;
+
+    return this.stack.pop();
   }
 
   clear() {

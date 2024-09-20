@@ -26,8 +26,7 @@ npm run dev
 
 #### Gameplay Features
 
-- [ ] **Undo/Redo System**: Implement an undo/redo feature to allow users to revert to previous game states.
-- [ ] **Add a restart, and new button**: Add a restart button to restart the game, add a new button to start a new game
+- [ ] **Add a restart**: Add a restart button to restart the current game
 - [ ] **Add sudoku generation**: Add new sudoku generation on build time
 
 #### UI/UX Enhancements

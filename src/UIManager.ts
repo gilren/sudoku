@@ -13,7 +13,7 @@ export default class UIManager {
   containerEl: HTMLElement;
   wrapper: HTMLDivElement;
   infosContainer: HTMLDivElement;
-  solveBtn: HTMLButtonElement;
+  restartBtn: HTMLButtonElement;
   validateBtn: HTMLButtonElement;
   newGameBtn: HTMLButtonElement;
   undoBtn: HTMLButtonElement;
@@ -23,7 +23,7 @@ export default class UIManager {
   grid: HTMLDivElement;
 
   private newGameBtnListener: () => void;
-  private solveBtnListener: () => void;
+  private restartBtnListener: () => void;
   private validateBtnListener: () => void;
   private undoKeyListener: (event: KeyboardEvent) => void;
 
@@ -31,7 +31,7 @@ export default class UIManager {
     this.containerEl = containerEl;
     this.wrapper = document.createElement('div');
     this.infosContainer = document.createElement('div');
-    this.solveBtn = document.createElement('button');
+    this.restartBtn = document.createElement('button');
     this.validateBtn = document.createElement('button');
     this.newGameBtn = document.createElement('button');
     this.undoBtn = document.createElement('button');
@@ -41,7 +41,7 @@ export default class UIManager {
     this.difficultySelector = document.createElement('select');
 
     this.newGameBtnListener = () => {};
-    this.solveBtnListener = () => {};
+    this.restartBtnListener = () => {};
     this.validateBtnListener = () => {};
     this.undoKeyListener = () => {};
   }
@@ -51,8 +51,8 @@ export default class UIManager {
     this.grid.classList.add('sudoku__grid');
     this.infosContainer.classList.add('sudoku__infos');
 
-    this.solveBtn.textContent = 'Solve';
-    this.solveBtn.classList.add('btn', 'btn-solve');
+    this.restartBtn.textContent = 'Restart';
+    this.restartBtn.classList.add('btn', 'btn-restart');
 
     this.validateBtn.textContent = 'Validate';
     this.validateBtn.classList.add('btn', 'btn-validate');
@@ -64,7 +64,7 @@ export default class UIManager {
 
     this.infosContainer.appendChild(this.difficultySelector);
     this.infosContainer.appendChild(this.validateBtn);
-    this.infosContainer.appendChild(this.solveBtn);
+    this.infosContainer.appendChild(this.restartBtn);
     this.infosContainer.appendChild(this.newGameBtn);
     this.infosContainer.appendChild(this.timerEl);
     this.wrapper.appendChild(this.infosContainer);
@@ -100,9 +100,9 @@ export default class UIManager {
     this.newGameBtn.addEventListener('click', callback);
   }
 
-  onSolveClicked(callback: () => void) {
-    this.solveBtnListener = callback;
-    this.solveBtn.addEventListener('click', callback);
+  onrestartClicked(callback: () => void) {
+    this.restartBtnListener = callback;
+    this.restartBtn.addEventListener('click', callback);
   }
 
   onValidateClicked(callback: () => void) {
@@ -228,11 +228,10 @@ export default class UIManager {
   //       cell.showSolution(val);
   //     }
   //   });
-  //   this.solveBtn.classList.add('--is-solved');
+  //   this.restartBtn.classList.add('--is-restartd');
   // }
 
   addInvalidIndicator(cell: Cell) {
-    console.log('invialid');
     this.grid.children.item(cell.id).classList.add('cell--invalid');
   }
 
@@ -251,7 +250,7 @@ export default class UIManager {
     const markerContainer = cellElement.querySelector('.marker-container');
     if (!markerContainer) return;
 
-    if (markers.length !== 1) {
+    if (markers.length > 1) {
       cellElement.classList.remove('has-markers');
     } else {
       cellElement.classList.add('has-markers');
@@ -268,12 +267,11 @@ export default class UIManager {
   clear() {
     document.removeEventListener('keydown', this.undoKeyListener);
     this.newGameBtn.removeEventListener('click', this.newGameBtnListener);
-    this.solveBtn.removeEventListener('click', this.solveBtnListener);
+    this.restartBtn.removeEventListener('click', this.restartBtnListener);
     this.validateBtn.removeEventListener('click', this.validateBtnListener);
 
     this.wrapper.innerHTML = '';
 
-    // Optionally reset the timer UI
-    this.updateTimerText(0, 0, 0); // Reset the timer display to 0
+    this.updateTimerText(0, 0, 0);
   }
 }

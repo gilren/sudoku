@@ -23,7 +23,7 @@ export default class Cell extends EventEmitter {
     if (!(target instanceof HTMLSpanElement)) return;
 
     const value = Number(target.textContent);
-    console.log(value);
+
     if (!isSudokuCell(value)) {
       console.error('Value not allowed');
       return;
@@ -62,14 +62,4 @@ export default class Cell extends EventEmitter {
       this.emit('markersChanged');
     }
   }
-
-  // updateValue(value: number, markers: Array<number>) {
-  //   this.currentValue = value;
-  //   this.markers = markers;
-  //   if (this.markers.length !== 1) {
-  //     this.currentValue = 0;
-  //   }
-
-  //   this.emit('markersChanged', markers);
-  // }
 }

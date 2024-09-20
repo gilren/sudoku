@@ -118,7 +118,6 @@ export default class Sudoku {
       this.uiManager.removeInvalidIndicator(gridCell);
     }
 
-    console.log('validate');
     let errors: Array<Duplicate> = [];
 
     for (let x = 0; x < BOARD_SIZE; x++) {
@@ -137,8 +136,6 @@ export default class Sudoku {
 
     if (errors.length > 0) {
       this.errors = errors;
-
-      console.log(errors);
 
       for (let duplicate of errors) {
         const cell = this.gridCells.find((cell) => cell.id === duplicate.id);
@@ -180,8 +177,6 @@ export default class Sudoku {
   handleCellValueChange(info: object) {
     if (!this.activeBoard) return;
 
-    console.log(info);
-
     const { id, oldValue, oldMarkers, newValue } = info;
 
     const cell = this.gridCells.find((c) => c.id === id);
@@ -193,7 +188,6 @@ export default class Sudoku {
       markers: oldMarkers,
     };
     this.undoManager.store(action);
-    console.log(this.undoManager.stack);
 
     this.activeBoard[x][y] = newValue;
   }
@@ -243,10 +237,6 @@ export default class Sudoku {
       this.activeBoard[cell.coords.x][cell.coords.y] = value;
 
       cell.setValue(value, markers, true);
-
-      // cell.updateMarkers(markers);
-
-      console.log('Undo', value, markers);
     }
   }
 }

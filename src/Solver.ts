@@ -22,8 +22,6 @@ export default class Solver {
       return;
     }
 
-    // console.log(board);
-
     const solveFromCell = (row: number, col: number): boolean => {
       // If we reach the end of a column, move to the next row.
       if (col === BOARD_SIZE) {
@@ -58,7 +56,7 @@ export default class Solver {
     };
 
     if (solveFromCell(0, 0)) {
-      console.log('Sudoku was solved successfully');
+      // console.log('Sudoku was solved successfully');
       this.solution = board;
     }
   }
