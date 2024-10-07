@@ -106,7 +106,7 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   position: absolute;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 250ms ease-out;
   z-index: 5;
 }
@@ -123,6 +123,7 @@ body {
   font-weight: 600;
   visibility: hidden;
   border-radius: 50%;
+  transform: translate3d(0, 0, 0);
   transition: color 250ms ease-in-out, opacity 250ms ease-in-out,
     background-color 250ms ease-in-out, transform 250ms ease-out;
 }
@@ -200,26 +201,6 @@ body {
   opacity: 1;
   transition: opacity 250ms ease-out;
 }
-
-.number-container--solution {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  font-size: 2.5em;
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 1;
-  bottom: 0;
-  color: rgb(180, 236, 180);
-  background: rgb(180, 236, 180, 0.2);
-}
-
-/*#989EA2
-#5A7897
-*/
 
 .helper {
   pointer-events: none;
