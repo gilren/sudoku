@@ -113,13 +113,16 @@ export default class Sudoku {
   }
 
   finish() {
-    this.stopTimer();
+    if (this.validate()) {
+      this.stopTimer();
+      alert('Congrats, the sudoku is solved');
+    }
   }
 
-  validate() {
+  validate(): boolean {
     if (!this.activeBoard || !this.solutionBoard) {
       console.error('Active board or solution is null');
-      return;
+      return false;
     }
 
     this.errors = [];
@@ -139,6 +142,7 @@ export default class Sudoku {
             id: x * BOARD_SIZE + y,
           };
           errors.push(error);
+          console.log(`Error found at ${x}, ${y}, value: ${current}`);
         }
       }
     }
@@ -153,9 +157,11 @@ export default class Sudoku {
         }
       }
 
-      return console.error('Sudoku has errors');
+      console.log('Sudoku has errors');
+      return false;
     } else {
-      return console.log('Sudoku is valid');
+      console.log('Sudoku is valid');
+      return true;
     }
   }
 
@@ -199,6 +205,11 @@ export default class Sudoku {
     this.undoManager.store(action);
 
     this.activeBoard[x][y] = newValue;
+    requestAnimationFrame(() => {
+      if (!this.activeBoard.some((row) => row.some((el) => el === 0))) {
+        this.finish();
+      }
+    });
   }
 
   changeDifficulty(newDifficulty: string) {
@@ -206,16 +217,6 @@ export default class Sudoku {
     localStorage.setItem('difficulty', newDifficulty);
     this.reset();
     this.new();
-  }
-
-  getSeed(): string | null {
-    const seed = localStorage.getItem('seed');
-
-    if (seed && !isNaN(Number(seed))) {
-      return seed;
-    }
-
-    return null;
   }
 
   getDifficulty(): Difficulty {
