@@ -2,8 +2,14 @@ import { BOARD_SIZE, DIFFICULTY_EASY } from './constants';
 import Cell from './Cell';
 import Solver from './Solver';
 
-import { Action, Board, Difficulty, Duplicate } from './types';
-import UIManager from './UiManager';
+import {
+  Action,
+  Board,
+  CellValueChangeInfo,
+  Difficulty,
+  Duplicate,
+} from './types';
+import UIManager from './UIManager';
 import UndoManager from './UndoManager';
 import { isDifficulty } from './utils';
 
@@ -62,8 +68,8 @@ export default class Sudoku {
   }
 
   async load(seed?: number): Promise<void> {
+    const difficulty = this.getDifficulty();
     try {
-      const difficulty = this.getDifficulty();
       const sudokus = (await import(`../sudokus/${difficulty}.json`)).default;
       if (!seed) {
         seed = Math.floor(Math.random() * sudokus.length);
@@ -82,7 +88,7 @@ export default class Sudoku {
         this.initialBoard,
         this.gridCells,
         difficulty,
-        (info: object) => this.handleCellValueChange(info),
+        (info: CellValueChangeInfo) => this.handleCellValueChange(info),
       );
 
       this.uiManager.onUndoKeyListener(() => this.undo());
@@ -102,7 +108,6 @@ export default class Sudoku {
   }
 
   restart() {
-    console.log(this.seed);
     if (!this.seed) return;
     this.new(this.seed);
   }
@@ -178,7 +183,7 @@ export default class Sudoku {
     }
   }
 
-  handleCellValueChange(info: object) {
+  handleCellValueChange(info: CellValueChangeInfo) {
     if (!this.activeBoard) return;
 
     const { id, oldValue, oldMarkers, newValue } = info;

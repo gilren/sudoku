@@ -30,3 +30,11 @@ export type Action = {
   value: number;
   markers: Array<number>;
 };
+
+export interface CellValueChangeInfo {
+  id: number;
+  oldValue: number;
+  newValue: number;
+  oldMarkers: Array<number>;
+  newMarkers: Array<number>;
+}

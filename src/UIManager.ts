@@ -7,7 +7,7 @@ import {
   DIFFICULTY_MASTER,
 } from './constants';
 
-import { Board } from './types';
+import { Board, CellValueChangeInfo } from './types';
 
 export default class UIManager {
   containerEl: HTMLElement;
@@ -129,7 +129,7 @@ export default class UIManager {
     board: Board,
     gridCells: Array<Cell>,
     currentDifficulty: string,
-    handleCellValueChange: (info: object) => void,
+    handleCellValueChange: (info: CellValueChangeInfo) => void,
   ) {
     this.populateDifficultySelector(
       [
@@ -150,7 +150,9 @@ export default class UIManager {
         const cell = new Cell(cellValue, id, { x, y });
         const cellElement = this.createCellUI(cell);
 
-        cell.on('saveAction', (info: object) => handleCellValueChange(info));
+        cell.on('saveAction', (info: CellValueChangeInfo) =>
+          handleCellValueChange(info),
+        );
 
         gridCells.push(cell);
         this.grid.appendChild(cellElement);
@@ -211,20 +213,6 @@ export default class UIManager {
       this.updateCellUI(cellElement, cell);
     });
   }
-
-  // Might need to modify the solution display, either keep the overlay or replace the values directly and play with classes
-  // displaySolution(solution: Board, gridCells: Array<Cell>) {
-  //   if (!solution) return;
-  //   const values = solution.flat();
-
-  //   gridCells.forEach((cell, index) => {
-  //     const val = values[index];
-  //     if (!cell.isDefault) {
-  //       cell.showSolution(val);
-  //     }
-  //   });
-  //   this.restartBtn.classList.add('--is-restartd');
-  // }
 
   addInvalidIndicator(cell: Cell) {
     this.grid.querySelector(`#cell-${cell.id}`).classList.add('cell--invalid');
