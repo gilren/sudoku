@@ -56,9 +56,6 @@ body {
   border: 1px solid rgba(152, 158, 162, 0.2);
   font-size: 20px;
   text-align: center;
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
   font-weight: 700;
   position: relative;
   box-sizing: border-box;
@@ -109,17 +106,9 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   position: absolute;
+  opacity: 0;
+  transition: opacity 250ms ease-out;
   z-index: 5;
-}
-
-.marker-container:hover .marker {
-  opacity: 0.5;
-  visibility: visible;
-}
-
-.marker-container:hover .marker.selected {
-  opacity: 1;
-  background-color: rgba(90, 120, 151, 0.5);
 }
 
 .marker {
@@ -131,31 +120,69 @@ body {
   color: #989ea2;
   cursor: pointer;
   opacity: 0.5;
+  font-weight: 600;
   visibility: hidden;
   border-radius: 50%;
   transition: color 250ms ease-in-out, opacity 250ms ease-in-out,
-    background-color 250ms ease-in-out;
+    background-color 250ms ease-in-out, transform 250ms ease-out;
+}
+
+.marker:not(.selected):nth-child(1) {
+  transform: translate3d(100%, 100%, 0);
+}
+.marker:not(.selected):nth-child(2) {
+  transform: translate3d(0, 100%, 0);
+}
+.marker:not(.selected):nth-child(3) {
+  transform: translate3d(-100%, 100%, 0);
+}
+.marker:not(.selected):nth-child(4) {
+  transform: translate3d(100%, 0, 0);
+}
+.marker:not(.selected):nth-child(5) {
+  transform: translate3d(0, 0, 0);
+}
+.marker:not(.selected):nth-child(6) {
+  transform: translate3d(-100%, 0, 0);
+}
+.marker:not(.selected):nth-child(7) {
+  transform: translate3d(100%, -100%, 0);
+}
+.marker:not(.selected):nth-child(8) {
+  transform: translate3d(0, -100%, 0);
+}
+.marker:not(.selected):nth-child(9) {
+  transform: translate3d(-100%, -100%, 0);
+}
+
+.marker.selected {
+  opacity: 1;
+  visibility: visible;
+}
+
+.marker-container:hover .marker {
+  opacity: 0.5;
+  transform: translate3d(0, 0, 0);
+  visibility: visible;
+}
+
+.marker-container:hover .marker.selected {
+  opacity: 1;
+  background-color: rgba(90, 120, 151, 0.5);
 }
 
 .marker-container:hover .marker:hover {
   opacity: 1;
 }
 
+.cell-hover:not(.cell-default) .number-container,
 .has-markers .marker-container {
-  display: none;
-}
-
-.cell-hover.has-markers .marker-container {
-  display: grid;
-}
-
-.cell-hover:not(.cell-default) .number-container {
   opacity: 0;
 }
 
-.marker.selected {
+.cell-hover .marker-container,
+.cell-hover.has-markers .marker-container {
   opacity: 1;
-  visibility: visible;
 }
 
 .number-container {
@@ -171,6 +198,7 @@ body {
   z-index: 1;
   bottom: 0;
   opacity: 1;
+  transition: opacity 250ms ease-out;
 }
 
 .number-container--solution {
@@ -221,15 +249,10 @@ select {
   font-size: 18px;
   padding: 0.75em 1.75em;
   cursor: pointer;
-  transition: all 250ms ease-in-out;
+  transition: all 250ms ease-out;
 }
 
 .btn:hover {
   border-color: rgb(132, 140, 143, 0.8);
   background: rgb(132, 140, 143, 0.05);
-}
-
-.btn-solve.--is-solved {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
