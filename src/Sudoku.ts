@@ -8,6 +8,7 @@ import {
   CellValueChangeInfo,
   Difficulty,
   Duplicate,
+  Status,
 } from './types';
 import UIManager from './UIManager';
 import UndoManager from './UndoManager';
@@ -26,9 +27,11 @@ export default class Sudoku {
   timer: NodeJS.Timeout | null;
   isSolved: boolean;
   isLoading: boolean;
+  status: Status;
   seed: number | null;
 
   constructor(el: HTMLElement) {
+    this.status = 'init';
     this.isSolved = false;
     this.isLoading = false;
     this.seed = null;
@@ -47,15 +50,23 @@ export default class Sudoku {
 
   async new(seed?: number) {
     if (this.isLoading) return;
-    this.isLoading = true;
+    this.setStatus('pending');
+
     try {
       this.reset();
       this.startTimer();
       this.uiManager.initializeUI();
       await this.load(seed);
-    } finally {
-      this.isLoading = false;
+      this.setStatus('success');
+    } catch (error) {
+      console.log(error);
+      this.setStatus('failure');
     }
+  }
+
+  setStatus(status: Status) {
+    this.status = status;
+    this.isLoading = status === 'pending';
   }
 
   reset() {

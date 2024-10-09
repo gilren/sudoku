@@ -15,6 +15,8 @@ export type Difficulty =
 
 export type Board = Array<Array<number>> | null;
 
+export type Status = 'init' | 'pending' | 'success' | 'failure';
+
 export type Coords = {
   x: number;
   y: number;
