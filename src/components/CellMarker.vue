@@ -1,5 +1,41 @@
+<script setup lang="ts">
+import { ref, useTemplateRef, type Ref } from 'vue'
+
+const markers = useTemplateRef('marker')
+const activeMarkers: Ref<Set<number>> = ref(new Set([]))
+
+const emit = defineEmits(['update'])
+
+async function handleClick(e: MouseEvent) {
+  const index = markers.value.findIndex((el) => el === e.target) + 1
+
+  if (index !== -1) {
+    if (activeMarkers.value.has(index)) {
+      activeMarkers.value.delete(index)
+    } else {
+      activeMarkers.value.add(index)
+    }
+    emit('update', activeMarkers)
+  }
+}
+
+function isMarkerActive(marker: number) {
+  return activeMarkers.value.has(marker)
+}
+</script>
+
 <template>
-  <div class="marker-container"></div>
+  <div class="marker-container" @click="handleClick">
+    <div
+      v-for="n in 9"
+      :key="n"
+      class="marker"
+      ref="marker"
+      :class="{ selected: isMarkerActive(n) }"
+    >
+      {{ n }}
+    </div>
+  </div>
 </template>
 
 <style scoped>

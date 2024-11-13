@@ -84,14 +84,4 @@ const flattenedSudoku = computed(() =>
 .sudoku__grid .cell:nth-child(54) {
   border-bottom-color: rgba(152, 158, 162, 1);
 }
-
-.cell-hover:not(.cell-default) .number-container,
-.has-markers .marker-container {
-  opacity: 0;
-}
-
-.cell-hover .marker-container,
-.cell-hover.has-markers .marker-container {
-  opacity: 1;
-}
 </style>
