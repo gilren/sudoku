@@ -1,6 +1,6 @@
-# Sudoku Game
+# Sudoku Game with Vue
 
-This project implements a **Sudoku Game** built with TypeScript.
+This project implements a **Sudoku Game** built with TypeScript and Vue.
 
 ## Features
 
