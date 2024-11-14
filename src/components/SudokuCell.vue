@@ -1,22 +1,29 @@
 <script setup lang="ts">
-import { defineProps, ref, type Ref } from 'vue'
-import CellMarker from './CellMarker.vue'
+import { defineProps, ref, watch, type Ref } from 'vue'
+import SudokuMarker from '@/components/SudokuMarker.vue'
+
+import { state } from '@/store/sudokuStore'
+
+import type { Coords } from '@/utils/types'
 
 const props = defineProps<{
   value: number
   index: number
+  coords: Coords
 }>()
 
 const isDefault = props.value !== 0
 
 const currentValue = ref(props.value)
 const hasMarkers = ref(false)
-
 function handleUpdate(markers: Ref<Set<number>, Set<number>>) {
-  console.log(markers.value.size)
   hasMarkers.value = markers.value.size > 1
   currentValue.value = markers.value.size === 1 ? Array.from(markers.value)[0] : 0
 }
+
+watch(currentValue, (newValue) => {
+  state.board[props.coords.y][props.coords.x] = newValue
+})
 </script>
 
 <template>
@@ -25,10 +32,11 @@ function handleUpdate(markers: Ref<Set<number>, Set<number>>) {
       {{ currentValue !== 0 ? currentValue : '' }}
     </div>
     <div class="helper">
-      <!-- {{ props.index }} -->
+      <!-- {{ props.index }}
+      {{ props.coords }} -->
     </div>
 
-    <CellMarker v-if="!isDefault" @update="handleUpdate" />
+    <SudokuMarker v-if="!isDefault" @update="handleUpdate" />
   </div>
 </template>
 

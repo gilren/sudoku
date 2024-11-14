@@ -31,30 +31,3 @@ body {
   justify-content: center;
   align-items: center;
 }
-
-select {
-  display: inline-block;
-  border: 1px solid rgb(132, 140, 143, 0.3);
-  background: #1b2023;
-  color: #989ea2;
-  font-size: 18px;
-  padding: 0.75em 1em;
-  cursor: pointer;
-  transition: all 250ms ease-in-out;
-}
-
-.btn {
-  display: inline-block;
-  border: 1px solid rgb(132, 140, 143, 0.3);
-  background: transparent;
-  color: #989ea2;
-  font-size: 18px;
-  padding: 0.75em 1.75em;
-  cursor: pointer;
-  transition: all 250ms ease-out;
-}
-
-.btn:hover {
-  border-color: rgb(132, 140, 143, 0.8);
-  background: rgb(132, 140, 143, 0.05);
-}
