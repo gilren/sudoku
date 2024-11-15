@@ -7,7 +7,7 @@ import {
 } from '@/utils/types'
 
 export function isDifficulty(
-  value: string,
+  value: string | null,
 ): value is
   | typeof DIFFICULTY_EASY
   | typeof DIFFICULTY_MEDIUM

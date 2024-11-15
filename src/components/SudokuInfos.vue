@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import {
-  DIFFICULTY_EASY,
-  DIFFICULTY_EXPERT,
-  DIFFICULTY_HARD,
-  DIFFICULTY_MASTER,
-  DIFFICULTY_MEDIUM,
-} from '@/utils/types'
 import { onMounted, onUnmounted, ref } from 'vue'
 
-const selectedDifficulty = ref(DIFFICULTY_EASY)
+import { useSudokuStore } from '@/store/sudokuStore'
+import {
+  DIFFICULTY_EASY,
+  DIFFICULTY_MEDIUM,
+  DIFFICULTY_HARD,
+  DIFFICULTY_EXPERT,
+  DIFFICULTY_MASTER,
+} from '@/utils/types'
+
+const { setDifficulty, getDifficulty, loadBoard } = useSudokuStore()
+
 const emit = defineEmits(['restart', 'validate', 'new'])
 
 const timerInterval = ref()
@@ -53,11 +56,6 @@ function restartTimer() {
 }
 
 onMounted(() => {
-  const storedDifficulty = localStorage.getItem('difficulty')
-  if (storedDifficulty) {
-    selectedDifficulty.value = storedDifficulty
-  }
-
   startTimer()
 })
 
@@ -66,10 +64,10 @@ onUnmounted(() => {
   timerValue.value = ''
 })
 
-function handleChange() {
-  localStorage.setItem('difficulty', selectedDifficulty.value)
+function changeDifficulty() {
+  setDifficulty(getDifficulty.value)
+  loadBoard()
   restartTimer()
-  emit('new')
 }
 
 function handleRestart() {
@@ -85,7 +83,7 @@ function handleNew() {
 
 <template>
   <div class="sudoku__infos">
-    <select name="difficulty" v-model="selectedDifficulty" @change="handleChange">
+    <select name="difficulty" v-model="getDifficulty" @change="changeDifficulty">
       <option v-for="option in difficulties" :value="option" :key="option">
         {{ option[0].toUpperCase() + option.slice(1) }}
       </option>

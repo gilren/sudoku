@@ -1,38 +1,37 @@
 <script setup lang="ts">
 import SudokuCell from '@/components/SudokuCell.vue'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useSudokuStore } from '@/store/sudokuStore'
 
-import { state } from '@/store/sudokuStore'
+const { state, getBoard, loadBoard } = useSudokuStore()
 
-onMounted(async () => {
-  try {
-    state.board = (await import(`../../sudokus/easy.json`)).default[0]
-  } catch (e) {
-    throw e
-  }
-})
-
-const flattenedSudoku = computed(() =>
-  state.board.flatMap((col, colIdx) =>
-    col.map((row, rowIdx) => ({
-      value: row as number,
-      index: (colIdx * state.board[0].length + rowIdx) as number,
-      coords: { x: rowIdx, y: colIdx },
+const flattenedBoard = computed(() =>
+  state.board.flatMap((row, rowIdx) =>
+    row.map((value, colIdx) => ({
+      value,
+      index: rowIdx * state.board[0].length + colIdx,
+      coords: { x: colIdx, y: rowIdx },
     })),
   ),
 )
+
+onMounted(() => {
+  loadBoard()
+})
 </script>
 
 <template>
   <div class="sudoku__grid">
     <SudokuCell
-      v-for="cell in flattenedSudoku"
+      v-for="cell in flattenedBoard"
       :key="cell.index"
       :value="cell.value"
       :index="cell.index"
       :coords="cell.coords"
     />
   </div>
+
+  <div class="loading" v-if="state.loading">azeaze</div>
 </template>
 
 <style scoped>

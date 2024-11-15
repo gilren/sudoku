@@ -2,7 +2,9 @@
 import { defineProps, ref, watch, type Ref } from 'vue'
 import SudokuMarker from '@/components/SudokuMarker.vue'
 
-import { state } from '@/store/sudokuStore'
+import { useSudokuStore } from '@/store/sudokuStore'
+
+const { state } = useSudokuStore()
 
 import type { Coords } from '@/utils/types'
 
@@ -28,12 +30,13 @@ watch(currentValue, (newValue) => {
 
 <template>
   <div class="cell" :class="{ 'cell--default': isDefault, 'has-markers': hasMarkers }">
+    <!-- {{ currentValue }} -->
     <div class="number-container">
       {{ currentValue !== 0 ? currentValue : '' }}
     </div>
     <div class="helper">
-      <!-- {{ props.index }}
-      {{ props.coords }} -->
+      <!-- {{ props.index }} -->
+      <!-- {{ props.coords }} -->
     </div>
 
     <SudokuMarker v-if="!isDefault" @update="handleUpdate" />

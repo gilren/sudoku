@@ -3,14 +3,17 @@ import SudokuBoard from '@/components/SudokuBoard.vue'
 import SudokuInfos from '@/components/SudokuInfos.vue'
 import solveBoard from '@/Solver'
 
-import { state } from '@/store/sudokuStore'
+import { useSudokuStore } from '@/store/sudokuStore'
+import { computed, onMounted, ref } from 'vue'
+
+const { state, loadBoard, getFlattenedBoard } = useSudokuStore()
 
 function handleRestart() {
   console.log('restart')
 }
 function handleNew() {
+  console.log('HANDLE NEW')
   console.log(state.board)
-  console.log('new')
 }
 function handleValidate() {
   // solveBoard()
