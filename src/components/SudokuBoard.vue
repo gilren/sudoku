@@ -1,27 +1,16 @@
 <script setup lang="ts">
 import SudokuCell from '@/components/SudokuCell.vue'
 import { computed, onMounted, ref } from 'vue'
-import { useSudokuStore } from '@/store/sudokuStore'
+import { useGameStore } from '@/store/game'
 
-const { state, getBoard, loadBoard } = useSudokuStore()
+const store = useGameStore()
 
-const flattenedBoard = computed(() =>
-  state.board.flatMap((row, rowIdx) =>
-    row.map((value, colIdx) => ({
-      value,
-      index: rowIdx * state.board[0].length + colIdx,
-      coords: { x: colIdx, y: rowIdx },
-    })),
-  ),
-)
-
-onMounted(() => {
-  loadBoard()
-})
+const flattenedBoard = computed(() => store.getFlattenedBoard)
 </script>
 
 <template>
-  <div class="sudoku__grid">
+  <div v-if="store.loading" class="loading">Loading...</div>
+  <div v-else class="sudoku__grid">
     <SudokuCell
       v-for="cell in flattenedBoard"
       :key="cell.index"
@@ -30,8 +19,6 @@ onMounted(() => {
       :coords="cell.coords"
     />
   </div>
-
-  <div class="loading" v-if="state.loading">azeaze</div>
 </template>
 
 <style scoped>

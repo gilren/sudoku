@@ -2,9 +2,9 @@
 import { defineProps, ref, watch, type Ref } from 'vue'
 import SudokuMarker from '@/components/SudokuMarker.vue'
 
-import { useSudokuStore } from '@/store/sudokuStore'
+import { useGameStore } from '@/store/game'
 
-const { state } = useSudokuStore()
+const store = useGameStore()
 
 import type { Coords } from '@/utils/types'
 
@@ -24,7 +24,7 @@ function handleUpdate(markers: Ref<Set<number>, Set<number>>) {
 }
 
 watch(currentValue, (newValue) => {
-  state.board[props.coords.y][props.coords.x] = newValue
+  store.board[props.coords.y][props.coords.x] = newValue
 })
 </script>
 
@@ -86,6 +86,10 @@ watch(currentValue, (newValue) => {
   left: 5px;
   font-size: 12px;
   color: tomato;
+}
+
+.cell:not(.cell--default):hover {
+  background: rgba(255, 255, 255, 0.01);
 }
 
 .cell:not(.cell--default):hover .number-container,

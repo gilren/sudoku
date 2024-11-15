@@ -2,18 +2,20 @@
 import SudokuBoard from '@/components/SudokuBoard.vue'
 import SudokuInfos from '@/components/SudokuInfos.vue'
 import solveBoard from '@/Solver'
+import { useGameStore } from '@/store/game'
+import { onMounted } from 'vue'
 
-import { useSudokuStore } from '@/store/sudokuStore'
-import { computed, onMounted, ref } from 'vue'
-
-const { state, loadBoard, getFlattenedBoard } = useSudokuStore()
+const store = useGameStore()
+onMounted(() => {
+  store.loadBoard()
+})
 
 function handleRestart() {
   console.log('restart')
 }
 function handleNew() {
   console.log('HANDLE NEW')
-  console.log(state.board)
+  console.log(store.board)
 }
 function handleValidate() {
   // solveBoard()
