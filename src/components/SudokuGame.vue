@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import SudokuBoard from '@/components/SudokuBoard.vue'
-import SudokuInfos from '@/components/SudokuInfos.vue'
+import SudokuControls from '@/components/SudokuControls.vue'
 import { useGameStore } from '@/store/game'
 import { onMounted } from 'vue'
 
@@ -8,25 +8,11 @@ const store = useGameStore()
 onMounted(() => {
   store.loadBoard()
 })
-
-function handleRestart() {
-  store.loadBoard()
-}
-
-function handleNew() {
-  store.deleteSeed()
-  store.deleteSolution()
-  store.loadBoard()
-}
-
-function handleValidate() {
-  store.validate()
-}
 </script>
 
 <template>
   <div class="sudoku">
-    <SudokuInfos @restart="handleRestart" @new="handleNew" @validate="handleValidate" />
+    <SudokuControls />
     <SudokuBoard />
   </div>
 </template>

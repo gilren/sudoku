@@ -52,7 +52,6 @@ export const useGameStore = defineStore('game', {
         })),
       )
     },
-
     getSolution: (state) => {
       return state.solution
     },
@@ -119,6 +118,14 @@ export const useGameStore = defineStore('game', {
       this.setSolution(undefined)
     },
 
+    deleteMarkers() {
+      this.markers = Array.from({ length: 9 }, () =>
+        Array(9)
+          .fill(null)
+          .map(() => new Set<number>()),
+      )
+    },
+
     updateCell(x: number, y: number, value: number, newMarkers: Set<number>) {
       const previousValue = this.board[y][x]
       const previousMarkers = new Set(this.markers[y][x])
@@ -158,6 +165,18 @@ export const useGameStore = defineStore('game', {
       } else {
         console.log('No action to undo')
       }
+    },
+
+    restartGame() {
+      this.deleteMarkers()
+      this.loadBoard()
+    },
+
+    newGame() {
+      this.deleteSeed()
+      this.deleteSolution()
+      this.deleteMarkers()
+      this.loadBoard()
     },
   },
 })
