@@ -50,7 +50,7 @@ store.$onAction(({ name, after }) => {
   if (name === 'validate') {
     after(() => {
       if (isDefault || currentValue.value === 0) return
-      if (store.solution![props.coords.x][props.coords.y] !== currentValue.value) {
+      if (store.solution![props.coords.y][props.coords.x] !== currentValue.value) {
         isInvalid.value = true
       }
     })
@@ -84,6 +84,9 @@ store.$onAction(({ name, after }) => {
   font-weight: 700;
   position: relative;
   box-sizing: border-box;
+  transition:
+    background-color 250ms ease-in-out,
+    color 250ms ease-in-out;
 }
 
 .cell.cell--default {

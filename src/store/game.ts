@@ -4,6 +4,7 @@ import { isDifficulty } from '@/utils/utils'
 import { defineStore } from 'pinia'
 
 interface GameState {
+  initialBoard: number[][]
   board: number[][]
   difficulty: Difficulty
   loading: boolean
@@ -18,6 +19,7 @@ function initStoreDifficulty(): Difficulty {
 
 export const useGameStore = defineStore('game', {
   state: (): GameState => ({
+    initialBoard: Array.from({ length: 9 }, () => Array(9).fill(0)),
     board: Array.from({ length: 9 }, () => Array(9).fill(0)),
     difficulty: initStoreDifficulty(),
     loading: false,
@@ -26,6 +28,9 @@ export const useGameStore = defineStore('game', {
   getters: {
     getDifficulty: (state) => {
       return state.difficulty
+    },
+    getInitialBoard: (state) => {
+      return state.initialBoard
     },
     getBoard: (state) => {
       return state.board
@@ -47,6 +52,7 @@ export const useGameStore = defineStore('game', {
   actions: {
     setDifficulty(difficulty: Difficulty) {
       if (isDifficulty(difficulty)) {
+        this.deleteSeed()
         this.difficulty = difficulty
         localStorage.setItem('difficulty', difficulty)
       } else {
@@ -62,13 +68,14 @@ export const useGameStore = defineStore('game', {
       try {
         this.loading = true
         const difficulty = this.getDifficulty
-        this.deleteBoard()
+        this.deleteBoards()
 
         const data: number[][][] = (await import(`../../sudokus/${difficulty}.json`)).default
 
-        const seed = this.getASeed(data)
+        const seed = this.getOrGenerateSeed(data)
 
-        this.board = data[seed]
+        this.board = JSON.parse(JSON.stringify(data[seed]))
+        this.initialBoard = JSON.parse(JSON.stringify(data[seed]))
         console.log(`Loading board with difficulty ${difficulty} and seed ${seed}`)
         this.loading = false
       } catch (e) {
@@ -77,14 +84,17 @@ export const useGameStore = defineStore('game', {
       }
     },
 
-    getASeed(data: number[][][]): number {
+    getOrGenerateSeed(data: number[][][]): number {
       const storageSeed = Number(localStorage.getItem('seed'))
 
       if (isNaN(storageSeed) && typeof this.seed === 'undefined') {
         this.seed = Math.floor(Math.random() * data.length)
         localStorage.setItem('seed', this.seed.toString())
+      } else {
+        this.seed = storageSeed
       }
-      return this.seed as number
+
+      return this.seed
     },
 
     deleteSeed() {
@@ -92,8 +102,9 @@ export const useGameStore = defineStore('game', {
       this.seed = undefined
     },
 
-    deleteBoard() {
+    deleteBoards() {
       this.board = Array.from({ length: 9 }, () => Array(9).fill(0))
+      this.initialBoard = Array.from({ length: 9 }, () => Array(9).fill(0))
     },
 
     deleteSolution() {
@@ -101,16 +112,16 @@ export const useGameStore = defineStore('game', {
     },
 
     updateCell(x: number, y: number, value: number) {
-      console.log('updated cell', x, y)
-      this.board = this.board.map((row, rowIdx) =>
-        row.map((cell, colIdx) => (rowIdx === y && colIdx === x ? value : cell)),
-      )
+      this.board[y][x] = value
+
+      console.log(this.initialBoard)
     },
 
     validate() {
       if (!this.getSolution) {
-        this.setSolution(solveBoard(this.getBoard))
+        this.setSolution(solveBoard(this.getInitialBoard))
       }
+      console.log(this.getSolution)
     },
   },
 })
