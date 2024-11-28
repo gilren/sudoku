@@ -14,8 +14,8 @@ function handleRestart() {
   console.log('restart')
 }
 function handleNew() {
-  console.log('HANDLE NEW')
-  console.log(store.board)
+  store.deleteSeed()
+  store.loadBoard()
 }
 function handleValidate() {
   // solveBoard()

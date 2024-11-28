@@ -6,6 +6,7 @@ interface GameState {
   board: number[][]
   difficulty: Difficulty
   loading: boolean
+  seed?: number
 }
 
 function initStoreDifficulty(): Difficulty {
@@ -18,6 +19,7 @@ export const useGameStore = defineStore('game', {
     board: Array.from({ length: 9 }, () => Array(9).fill(0)),
     difficulty: initStoreDifficulty(),
     loading: false,
+    seed: undefined,
   }),
   getters: {
     getDifficulty: (state) => {
@@ -48,33 +50,33 @@ export const useGameStore = defineStore('game', {
     async loadBoard() {
       try {
         this.loading = true
-        console.log('loading board')
         const difficulty = this.getDifficulty
-        const data = (await import(`../../sudokus/${difficulty}.json`)).default[0]
-        this.board = data
+        const data: number[][][] = (await import(`../../sudokus/${difficulty}.json`)).default
+
+        const seed = this.getASeed(data)
+
+        this.board = data[seed]
+        console.log(`Loading board with difficulty ${difficulty} and seed ${seed}`)
         this.loading = false
       } catch (e) {
         console.error('Failed to load board:', e)
         throw e
       }
     },
+
+    getASeed(data: number[][][]): number {
+      const storageSeed = Number(localStorage.getItem('seed'))
+
+      if (!isNaN(storageSeed) || !this.seed) {
+        this.seed = Math.floor(Math.random() * data.length)
+        localStorage.setItem('seed', this.seed.toString())
+      }
+      return this.seed
+    },
+
+    deleteSeed() {
+      localStorage.removeItem('seed')
+      this.seed = undefined
+    },
   },
 })
-
-// export function useGameStore() {
-
-//   async function loadBoard() {
-//     try {
-//       state.loading = true
-//       console.log('loading board')
-//       const difficulty = getDifficulty.value
-//       const data = (await import(`../../sudokus/${difficulty}.json`)).default[0]
-//       state.board.splice(0, state.board.length, ...data)
-//       state.loading = false
-//     } catch (e) {
-//       console.error('Failed to load board:', e)
-//       throw e
-//     }
-//   }
-
-// }
