@@ -80,11 +80,11 @@ export const useGameStore = defineStore('game', {
     getASeed(data: number[][][]): number {
       const storageSeed = Number(localStorage.getItem('seed'))
 
-      if (!isNaN(storageSeed) || !this.seed) {
+      if (isNaN(storageSeed) && typeof this.seed === 'undefined') {
         this.seed = Math.floor(Math.random() * data.length)
         localStorage.setItem('seed', this.seed.toString())
       }
-      return this.seed
+      return this.seed as number
     },
 
     deleteSeed() {
