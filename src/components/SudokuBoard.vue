@@ -18,15 +18,20 @@ onUnmounted(() => {
 })
 
 function handleKeypress(e: KeyboardEvent) {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+  let key = e.key
+  if ((e.ctrlKey || e.metaKey) && key === 'z') {
     e?.preventDefault()
     console.log('CTRL Z')
   }
 
-  if (activeCell.value && isAllowedKey(e.key)) {
-    activeCell.value.sendKey(e.key)
+  if (activeCell.value) {
+    if (key === 'Backspace' || key === 'Delete') {
+      key = '0'
+    }
+    if (isAllowedKey(key)) {
+      activeCell.value.sendKey(key)
+    }
   }
-  // console.log(activeCell.value)
 }
 
 function handleMouseEnter(index: number) {
