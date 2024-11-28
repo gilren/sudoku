@@ -1,24 +1,56 @@
 <script setup lang="ts">
 import SudokuCell from '@/components/SudokuCell.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, type ComponentPublicInstance, type Ref } from 'vue'
 import { useGameStore } from '@/store/game'
+import { isAllowedKey } from '@/utils/types'
 
 const store = useGameStore()
 
-const flattenedBoard = computed(() => store.getFlattenedBoard)
+const cellRefs: Ref<ComponentPublicInstance<typeof SudokuCell>[]> = ref([])
+const activeCell = ref<ComponentPublicInstance<typeof SudokuCell> | null>(null)
 
-console.log(flattenedBoard)
+onMounted(() => {
+  window.addEventListener('keydown', handleKeypress)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeypress)
+})
+
+function handleKeypress(e: KeyboardEvent) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    e?.preventDefault()
+    console.log('CTRL Z')
+  }
+
+  if (activeCell.value && isAllowedKey(e.key)) {
+    activeCell.value.sendKey(e.key)
+  }
+  // console.log(activeCell.value)
+}
+
+function handleMouseEnter(index: number) {
+  activeCell.value = cellRefs.value[index]
+}
+
+function handleMouseLeave() {
+  activeCell.value = null
+}
+
+const flattenedBoard = computed(() => store.getFlattenedBoard)
 </script>
 
 <template>
   <div v-if="store.loading" class="loading">Loading...</div>
-  <div v-else class="sudoku__grid">
+  <div v-else class="sudoku__grid" @mouseleave="handleMouseLeave()">
     <SudokuCell
-      v-for="cell in flattenedBoard"
+      v-for="(cell, idx) in flattenedBoard"
       :key="cell.index"
       :value="cell.value"
       :index="cell.index"
       :coords="cell.coords"
+      :ref="(el) => (cellRefs[idx] = el as ComponentPublicInstance<typeof SudokuCell>)"
+      @mouseenter="handleMouseEnter(idx)"
     />
   </div>
 </template>

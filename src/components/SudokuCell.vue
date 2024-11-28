@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { defineProps, ref, watch, type Ref } from 'vue'
+import { defineProps, ref, watch, type ComponentPublicInstance, type Ref } from 'vue'
 import SudokuMarker from '@/components/SudokuMarker.vue'
 
 import { useGameStore } from '@/store/game'
+import type { Coords } from '@/utils/types'
 
 const store = useGameStore()
-
-import type { Coords } from '@/utils/types'
 
 const props = defineProps<{
   value: number
@@ -16,10 +15,22 @@ const props = defineProps<{
 
 const isDefault = props.value !== 0
 
+const markers = ref<ComponentPublicInstance<typeof SudokuMarker>>()
+
 const currentValue = ref(props.value)
 
 const hasMarkers = ref(false)
 const isInvalid = ref(false)
+
+function sendKey(key: number) {
+  if (markers.value) {
+    markers.value.sendKey(key)
+  }
+}
+
+defineExpose({
+  sendKey,
+})
 
 function handleUpdate(markers: Ref<Set<number>>) {
   hasMarkers.value = markers.value.size > 1
@@ -72,7 +83,7 @@ store.$onAction(({ name, after }) => {
       <!-- {{ props.coords }} -->
     </div>
 
-    <SudokuMarker v-if="!isDefault" @update="handleUpdate" />
+    <SudokuMarker v-if="!isDefault" @update="handleUpdate" ref="markers" />
   </div>
 </template>
 

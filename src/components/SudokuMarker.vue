@@ -6,15 +6,34 @@ const activeMarkers: Ref<Set<number>> = ref(new Set([]))
 
 const emit = defineEmits(['update'])
 
-async function handleClick(e: MouseEvent) {
-  const index = markers.value.findIndex((el) => el === e.target) + 1
+function sendKey(key: number) {
+  let index = Number(key)
+  if (index === 0) index--
+  updateMarkers(index)
+}
 
+defineExpose({
+  sendKey,
+})
+
+function handleClick(e: MouseEvent) {
+  if (markers.value) {
+    const index = markers.value.findIndex((el) => el === e.target) + 1
+
+    updateMarkers(index)
+  }
+}
+
+function updateMarkers(index: number) {
   if (index !== -1) {
     if (activeMarkers.value.has(index)) {
       activeMarkers.value.delete(index)
     } else {
       activeMarkers.value.add(index)
     }
+    emit('update', activeMarkers)
+  } else {
+    activeMarkers.value.clear()
     emit('update', activeMarkers)
   }
 }
