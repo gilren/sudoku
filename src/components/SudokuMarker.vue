@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { ref, useTemplateRef, type Ref } from 'vue'
 
-const markers = useTemplateRef('marker')
-const activeMarkers: Ref<Set<number>> = ref(new Set([]))
+const markersRef = useTemplateRef('marker')
+
+const props = defineProps<{
+  markers: Set<number>
+}>()
 
 const emit = defineEmits(['update'])
 
 function sendKey(key: number) {
   let index = Number(key)
   if (index === 0) index--
-  updateMarkers(index)
+  updateMarker(index)
 }
 
 defineExpose({
@@ -17,29 +20,30 @@ defineExpose({
 })
 
 function handleClick(e: MouseEvent) {
-  if (markers.value) {
-    const index = markers.value.findIndex((el) => el === e.target) + 1
+  if (markersRef.value) {
+    const index = markersRef.value.findIndex((el) => el === e.target) + 1
 
-    updateMarkers(index)
+    updateMarker(index)
   }
 }
 
-function updateMarkers(index: number) {
+function updateMarker(index: number) {
+  if (index === 0) return
   if (index !== -1) {
-    if (activeMarkers.value.has(index)) {
-      activeMarkers.value.delete(index)
+    const updatedMarkers = new Set(props.markers)
+    if (updatedMarkers.has(index)) {
+      updatedMarkers.delete(index)
     } else {
-      activeMarkers.value.add(index)
+      updatedMarkers.add(index)
     }
-    emit('update', activeMarkers)
+    emit('update', updatedMarkers)
   } else {
-    activeMarkers.value.clear()
-    emit('update', activeMarkers)
+    emit('update', [])
   }
 }
 
 function isMarkerActive(marker: number) {
-  return activeMarkers.value.has(marker)
+  return props.markers.has(marker)
 }
 </script>
 

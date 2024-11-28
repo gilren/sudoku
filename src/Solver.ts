@@ -32,9 +32,6 @@ function solveFromCell(board: number[][], row: number, col: number): boolean {
   }
 
   // If the cell is filled, move to the next
-  if (board === undefined) {
-    console.log('board undefined')
-  }
   if (board[row][col] !== 0) {
     return solveFromCell(board, row, col + 1)
   }

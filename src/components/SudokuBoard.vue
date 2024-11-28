@@ -2,7 +2,7 @@
 import SudokuCell from '@/components/SudokuCell.vue'
 import { computed, onMounted, onUnmounted, ref, type ComponentPublicInstance, type Ref } from 'vue'
 import { useGameStore } from '@/store/game'
-import { isAllowedKey } from '@/utils/types'
+import { isAllowedKey } from '@/utils/utils'
 
 const store = useGameStore()
 
@@ -21,7 +21,7 @@ function handleKeypress(e: KeyboardEvent) {
   let key = e.key
   if ((e.ctrlKey || e.metaKey) && key === 'z') {
     e?.preventDefault()
-    console.log('CTRL Z')
+    store.undo()
   }
 
   if (activeCell.value) {
@@ -61,6 +61,15 @@ const flattenedBoard = computed(() => store.getFlattenedBoard)
 </template>
 
 <style scoped>
+pre {
+  position: absolute;
+  background: black;
+  width: 30%;
+  padding: 1rem;
+  right: 0;
+  z-index: 2;
+  top: 0;
+}
 .sudoku__grid {
   width: 100%;
   height: 100%;

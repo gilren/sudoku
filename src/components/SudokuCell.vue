@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref, watch, type ComponentPublicInstance, type Ref } from 'vue'
+import { computed, defineProps, ref, watch, type ComponentPublicInstance, type Ref } from 'vue'
 import SudokuMarker from '@/components/SudokuMarker.vue'
 
 import { useGameStore } from '@/store/game'
@@ -32,13 +32,17 @@ defineExpose({
   sendKey,
 })
 
-function handleUpdate(markers: Ref<Set<number>>) {
-  hasMarkers.value = markers.value.size > 1
+function handleUpdate(updatedMarkers: Set<number>) {
+  hasMarkers.value = updatedMarkers.size > 1
 
-  const newValue = markers.value.size === 1 ? Array.from(markers.value)[0] : 0
+  const newValue = updatedMarkers.size === 1 ? Array.from(updatedMarkers)[0] : 0
 
   currentValue.value = newValue
+
   isInvalid.value = false
+
+  // store.updateMarkers(props.coords.x, props.coords.y, updatedMarkers.value)
+  store.updateCell(props.coords.x, props.coords.y, newValue, updatedMarkers)
 }
 
 // Sync local state with store on value change
@@ -50,12 +54,19 @@ watch(
   { immediate: true },
 )
 
+watch(
+  () => store.markers[props.coords.y][props.coords.x],
+  (newMarkers) => {
+    hasMarkers.value = newMarkers.size > 1
+  },
+  { immediate: true },
+)
+
 // Propagate local state to store
-watch(currentValue, (newValue) => {
-  if (newValue !== props.value) {
-    store.updateCell(props.coords.x, props.coords.y, newValue)
-  }
-})
+// watch(currentValue, (newValue) => {
+//   if (newValue !== props.value) {
+//   }
+// })
 
 store.$onAction(({ name, after }) => {
   if (name === 'validate') {
@@ -83,7 +94,12 @@ store.$onAction(({ name, after }) => {
       <!-- {{ props.coords }} -->
     </div>
 
-    <SudokuMarker v-if="!isDefault" @update="handleUpdate" ref="markers" />
+    <SudokuMarker
+      v-if="!isDefault"
+      :markers="store.markers[props.coords.y][props.coords.x]"
+      @update="handleUpdate"
+      ref="markers"
+    />
   </div>
 </template>
 

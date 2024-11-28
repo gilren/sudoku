@@ -1,15 +1,17 @@
 import { solveBoard } from '@/Solver'
-import { Difficulty } from '@/utils/types'
+import { Difficulty, type UndoAction } from '@/utils/types'
 import { isDifficulty } from '@/utils/utils'
 import { defineStore } from 'pinia'
 
 interface GameState {
   initialBoard: number[][]
   board: number[][]
+  markers: Set<number>[][]
   difficulty: Difficulty
   loading: boolean
   seed?: number
   solution?: number[][]
+  undoStack: UndoAction[]
 }
 
 function initStoreDifficulty(): Difficulty {
@@ -21,9 +23,15 @@ export const useGameStore = defineStore('game', {
   state: (): GameState => ({
     initialBoard: Array.from({ length: 9 }, () => Array(9).fill(0)),
     board: Array.from({ length: 9 }, () => Array(9).fill(0)),
+    markers: Array.from({ length: 9 }, () =>
+      Array(9)
+        .fill(null)
+        .map(() => new Set<number>()),
+    ),
     difficulty: initStoreDifficulty(),
     loading: false,
     seed: undefined,
+    undoStack: [],
   }),
   getters: {
     getDifficulty: (state) => {
@@ -111,17 +119,45 @@ export const useGameStore = defineStore('game', {
       this.setSolution(undefined)
     },
 
-    updateCell(x: number, y: number, value: number) {
-      this.board[y][x] = value
+    updateCell(x: number, y: number, value: number, newMarkers: Set<number>) {
+      const previousValue = this.board[y][x]
+      const previousMarkers = new Set(this.markers[y][x])
+      const newMarkersCopy = new Set(newMarkers)
 
-      console.log(this.initialBoard)
+      this.undoStack.push({
+        x: x,
+        y: y,
+        previousValue,
+        newValue: value,
+        previousMarkers,
+        newMarkers: newMarkersCopy,
+      })
+
+      this.board[y][x] = value
+      this.markers[y][x] = newMarkersCopy
     },
 
     validate() {
       if (!this.getSolution) {
         this.setSolution(solveBoard(this.getInitialBoard))
       }
-      console.log(this.getSolution)
+    },
+
+    undo() {
+      if (this.undoStack.length > 0) {
+        const action = this.undoStack.pop()!
+        const { x, y, previousValue, previousMarkers } = action
+
+        if (previousValue !== undefined) {
+          this.board[y][x] = previousValue
+        }
+
+        if (previousMarkers !== undefined) {
+          this.markers[y][x] = previousMarkers
+        }
+      } else {
+        console.log('No action to undo')
+      }
     },
   },
 })
