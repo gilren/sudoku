@@ -3,6 +3,7 @@ import { Difficulty } from '@/utils/types'
 
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useGameStore } from '@/store/game'
+import { timeToText } from '@/utils/utils'
 
 const store = useGameStore()
 const currentDifficulty = ref(store.getDifficulty)
@@ -20,15 +21,8 @@ function startTimer() {
   const updateTimer = () => {
     const now = new Date().getTime()
     const elapsedTime = now - startTime
-    const seconds = Math.floor((elapsedTime / 1000) % 60)
-    const minutes = Math.floor((elapsedTime / (1000 * 60)) % 60)
-    const hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24)
 
-    let text = ''
-    if (hours > 0) text += `${hours}H `
-    if (minutes > 0) text += `${minutes}M `
-    text += `${seconds}S`
-    timerValue.value = text
+    timerValue.value = timeToText(elapsedTime)
   }
 
   timerInterval.value = setInterval(updateTimer, 1000)
