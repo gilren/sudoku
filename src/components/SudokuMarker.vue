@@ -78,7 +78,7 @@ function isMarkerActive(marker: number) {
   align-items: center;
   font-size: 0.675em;
   font-weight: 400;
-  color: #989ea2;
+  color: var(--whisper);
   cursor: pointer;
   opacity: 0.5;
   font-weight: 600;
@@ -126,14 +126,14 @@ function isMarkerActive(marker: number) {
 }
 
 .marker-container:hover .marker {
-  opacity: 0.5;
+  opacity: 0.6;
   transform: translate3d(0, 0, 0);
   visibility: visible;
 }
 
 .marker-container:hover .marker.selected {
   opacity: 1;
-  background-color: rgba(90, 120, 151, 0.5);
+  background-color: var(--tickle-me-pink);
 }
 
 .marker-container:hover .marker:hover {

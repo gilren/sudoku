@@ -66,20 +66,33 @@ function handleNew() {
 
 <template>
   <div class="sudoku__infos">
-    <select name="difficulty" v-model="currentDifficulty" @change="changeDifficulty">
-      <option v-for="option in difficulties" :value="option" :key="option">
-        {{ option[0].toUpperCase() + option.slice(1) }}
-      </option>
-    </select>
-    <button class="btn" @click="handleRestart">Restart</button>
-    <button class="btn" @click="$emit('validate')">Validate</button>
-    <button class="btn" @click="handleNew">New</button>
-    <div class="timer">{{ timerValue }}</div>
+    <div class="sudoku__timer">
+      <span class="timer">{{ timerValue }}</span>
+    </div>
+    <div class="sudoku__actions">
+      <select name="difficulty" v-model="currentDifficulty" @change="changeDifficulty">
+        <option v-for="option in difficulties" :value="option" :key="option">
+          {{ option[0].toUpperCase() + option.slice(1) }}
+        </option>
+      </select>
+      <button class="btn" @click="handleRestart">Restart</button>
+      <button class="btn" @click="handleNew">New</button>
+      <button class="btn" @click="$emit('validate')">Validate</button>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.sudoku__infos {
+.sudoku__timer {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.timer {
+  font-size: 2rem;
+}
+
+.sudoku__actions {
   margin-bottom: 1em;
   display: flex;
   justify-content: space-between;
@@ -88,28 +101,30 @@ function handleNew() {
 
 select {
   display: inline-block;
-  border: 1px solid rgb(132, 140, 143, 0.3);
-  background: #1b2023;
-  color: #989ea2;
+  border: none;
+  background: var(--blue-violet);
+  color: var(--whisper);
   font-size: 18px;
   padding: 0.75em 1em;
   cursor: pointer;
   transition: all 250ms ease-in-out;
+  border-radius: 5px;
 }
 
 .btn {
   display: inline-block;
-  border: 1px solid rgb(132, 140, 143, 0.3);
+  border: none;
   background: transparent;
-  color: #989ea2;
+  color: var(--whisper);
+  background: var(--blue-violet);
   font-size: 18px;
   padding: 0.75em 1.75em;
   cursor: pointer;
   transition: all 250ms ease-out;
+  border-radius: 5px;
 }
 
 .btn:hover {
-  border-color: rgb(132, 140, 143, 0.8);
-  background: rgb(132, 140, 143, 0.05);
+  background: var(--cranberry);
 }
 </style>

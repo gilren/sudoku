@@ -59,16 +59,19 @@ const flattenedBoard = computed(() => store.getFlattenedBoard)
 .sudoku__grid {
   width: 100%;
   height: 100%;
-  border: 2px solid #989ea2;
+  border: 2px solid var(--blue-violet);
   user-select: none;
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-template-rows: repeat(9, 1fr);
+  border-radius: 15px;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .sudoku__grid .cell:nth-child(9n + 3),
 .sudoku__grid .cell:nth-child(9n + 6) {
-  border-right-color: rgba(152, 158, 162, 1);
+  border-right-color: var(--blue-violet);
 }
 
 .sudoku__grid .cell:nth-child(19),
@@ -89,6 +92,6 @@ const flattenedBoard = computed(() => store.getFlattenedBoard)
 .sudoku__grid .cell:nth-child(52),
 .sudoku__grid .cell:nth-child(53),
 .sudoku__grid .cell:nth-child(54) {
-  border-bottom-color: rgba(152, 158, 162, 1);
+  border-bottom-color: var(--blue-violet);
 }
 </style>

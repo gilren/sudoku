@@ -89,7 +89,7 @@ store.$onAction(({ name, after }) => {
 
 <style scoped>
 .cell {
-  border: 1px solid rgba(152, 158, 162, 0.2);
+  border: 1px solid color-mix(in srgb, var(--blue-violet) 20%, transparent);
   font-size: 20px;
   text-align: center;
   font-weight: 700;
@@ -101,13 +101,20 @@ store.$onAction(({ name, after }) => {
 }
 
 .cell.cell--default {
-  color: #989ea2;
-  background: rgb(132, 140, 143, 0.2);
+  color: var(--whisper);
+  /* background: var(--port-gore); */
+
+  background: repeating-linear-gradient(
+    55deg,
+    transparent,
+    transparent 10px,
+    rgba(0, 0, 0, 0.18) 10px,
+    rgba(0, 0, 0, 0.18) 20px
+  );
 }
 
 .cell.cell--invalid {
-  color: rgb(255, 250, 160);
-  background: rgb(255, 250, 160, 0.2);
+  background: var(--rajah);
 }
 
 .number-container {

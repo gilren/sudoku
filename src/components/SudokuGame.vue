@@ -34,7 +34,10 @@ function handleValidate() {
 <style scoped>
 .sudoku {
   width: 80vh;
-  height: 80vh;
-  margin: 0 auto;
+  height: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>
