@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, useTemplateRef, type Ref } from 'vue'
+import { useTemplateRef } from 'vue'
 
 const markersRef = useTemplateRef('marker')
 
@@ -22,13 +22,12 @@ defineExpose({
 function handleClick(e: MouseEvent) {
   if (markersRef.value) {
     const index = markersRef.value.findIndex((el) => el === e.target) + 1
-
+    if (index === 0) return
     updateMarker(index)
   }
 }
 
 function updateMarker(index: number) {
-  if (index === 0) return
   if (index !== -1) {
     const updatedMarkers = new Set(props.markers)
     if (updatedMarkers.has(index)) {
