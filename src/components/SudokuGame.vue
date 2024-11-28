@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import SudokuBoard from '@/components/SudokuBoard.vue'
 import SudokuInfos from '@/components/SudokuInfos.vue'
-import solveBoard from '@/Solver'
 import { useGameStore } from '@/store/game'
 import { onMounted } from 'vue'
 
@@ -11,7 +10,7 @@ onMounted(() => {
 })
 
 function handleRestart() {
-  console.log('restart')
+  store.loadBoard()
 }
 function handleNew() {
   store.deleteSeed()

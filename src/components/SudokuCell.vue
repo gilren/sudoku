@@ -17,14 +17,31 @@ const props = defineProps<{
 const isDefault = props.value !== 0
 
 const currentValue = ref(props.value)
+
 const hasMarkers = ref(false)
-function handleUpdate(markers: Ref<Set<number>, Set<number>>) {
+
+function handleUpdate(markers: Ref<Set<number>>) {
   hasMarkers.value = markers.value.size > 1
-  currentValue.value = markers.value.size === 1 ? Array.from(markers.value)[0] : 0
+
+  const newValue = markers.value.size === 1 ? Array.from(markers.value)[0] : 0
+
+  currentValue.value = newValue
 }
 
+// Sync local state with store on value change
+watch(
+  () => props.value,
+  (newValue) => {
+    currentValue.value = newValue
+  },
+  { immediate: true },
+)
+
+// Propagate local state to store
 watch(currentValue, (newValue) => {
-  store.board[props.coords.y][props.coords.x] = newValue
+  if (newValue !== props.value) {
+    store.updateCell(props.coords.x, props.coords.y, newValue)
+  }
 })
 </script>
 

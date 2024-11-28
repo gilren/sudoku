@@ -51,6 +51,7 @@ export const useGameStore = defineStore('game', {
       try {
         this.loading = true
         const difficulty = this.getDifficulty
+        this.deleteBoard()
         const data: number[][][] = (await import(`../../sudokus/${difficulty}.json`)).default
 
         const seed = this.getASeed(data)
@@ -77,6 +78,18 @@ export const useGameStore = defineStore('game', {
     deleteSeed() {
       localStorage.removeItem('seed')
       this.seed = undefined
+    },
+
+    deleteBoard() {
+      console.log('deleted')
+      this.board = Array.from({ length: 9 }, () => Array(9).fill(0))
+    },
+
+    updateCell(x: number, y: number, value: number) {
+      console.log('updated cell', x, y)
+      this.board = this.board.map((row, rowIdx) =>
+        row.map((cell, colIdx) => (rowIdx === y && colIdx === x ? value : cell)),
+      )
     },
   },
 })

@@ -6,6 +6,8 @@ import { useGameStore } from '@/store/game'
 const store = useGameStore()
 
 const flattenedBoard = computed(() => store.getFlattenedBoard)
+
+console.log(flattenedBoard)
 </script>
 
 <template>
