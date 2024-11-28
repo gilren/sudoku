@@ -1,3 +1,4 @@
+import { solveBoard } from '@/Solver'
 import { Difficulty } from '@/utils/types'
 import { isDifficulty } from '@/utils/utils'
 import { defineStore } from 'pinia'
@@ -7,6 +8,7 @@ interface GameState {
   difficulty: Difficulty
   loading: boolean
   seed?: number
+  solution?: number[][]
 }
 
 function initStoreDifficulty(): Difficulty {
@@ -37,6 +39,10 @@ export const useGameStore = defineStore('game', {
         })),
       )
     },
+
+    getSolution: (state) => {
+      return state.solution
+    },
   },
   actions: {
     setDifficulty(difficulty: Difficulty) {
@@ -47,11 +53,17 @@ export const useGameStore = defineStore('game', {
         throw new Error('Trying to assign non valid difficulty')
       }
     },
+
+    setSolution(solution: number[][] | undefined) {
+      this.solution = solution
+    },
+
     async loadBoard() {
       try {
         this.loading = true
         const difficulty = this.getDifficulty
         this.deleteBoard()
+
         const data: number[][][] = (await import(`../../sudokus/${difficulty}.json`)).default
 
         const seed = this.getASeed(data)
@@ -81,8 +93,11 @@ export const useGameStore = defineStore('game', {
     },
 
     deleteBoard() {
-      console.log('deleted')
       this.board = Array.from({ length: 9 }, () => Array(9).fill(0))
+    },
+
+    deleteSolution() {
+      this.setSolution(undefined)
     },
 
     updateCell(x: number, y: number, value: number) {
@@ -90,6 +105,12 @@ export const useGameStore = defineStore('game', {
       this.board = this.board.map((row, rowIdx) =>
         row.map((cell, colIdx) => (rowIdx === y && colIdx === x ? value : cell)),
       )
+    },
+
+    validate() {
+      if (!this.getSolution) {
+        this.setSolution(solveBoard(this.getBoard))
+      }
     },
   },
 })

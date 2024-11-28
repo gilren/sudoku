@@ -1,56 +1,57 @@
-import { BLOCK_SIZE, BOARD_SIZE } from './constants'
+const BOARD_SIZE = 9
+const BLOCK_SIZE = Math.sqrt(BOARD_SIZE)
+const MINIMUM_CLUES = 17
 
-export function solveBoard(board: number[][]) {
-  if (!isSudokuValid(board)) {
+export function solveBoard(initialBoard: number[][]) {
+  if (!isSudokuValid(initialBoard)) {
     console.error('Sudoku is not valid.')
-    return null
+    return
   }
-  const board = this.board.map((arr) => [...arr])
+  const board = initialBoard.map((arr) => [...arr])
 
-  if (solution !== null) {
-    console.error('Sudoku was already solved.')
-    return null
-  }
+  let solution: number[][] | undefined = undefined
 
-  const solveFromCell = (row: number, col: number): boolean => {
-    // If we reach the end of a column, move to the next row.
-    if (col === BOARD_SIZE) {
-      col = 0
-      row++
-    }
-
-    // If we reach the end of the board, the puzzle is solved
-    if (row === BOARD_SIZE) {
-      return true
-    }
-
-    // If the cell is filled, move to the next
-    if (board[row][col] !== 0) {
-      return solveFromCell(row, col + 1)
-    }
-
-    // Try each possible value for the empty cell
-    for (let num = 1; num <= BOARD_SIZE; num++) {
-      const canPlaceValue = canPlaceValue(num, row, col, board)
-      if (canPlaceValue) {
-        board[row][col] = num
-        if (solveFromCell(row, col + 1)) {
-          return true
-        }
-      }
-      // Backtrack: reset cell to 0 and try the next value
-      board[row][col] = 0
-    }
-
-    return false
-  }
-
-  if (solveFromCell(0, 0)) {
-    // console.log('Sudoku was solved successfully');
-    this.solution = board
+  if (solveFromCell(board, 0, 0)) {
+    console.log('Sudoku was solved successfully')
+    solution = board
   }
 
   return solution
+}
+
+function solveFromCell(board: number[][], row: number, col: number): boolean {
+  // If we reach the end of a column, move to the next row.
+  if (col === BOARD_SIZE) {
+    col = 0
+    row++
+  }
+
+  // If we reach the end of the board, the puzzle is solved
+  if (row === BOARD_SIZE) {
+    return true
+  }
+
+  // If the cell is filled, move to the next
+  if (board === undefined) {
+    console.log('board undefined')
+  }
+  if (board[row][col] !== 0) {
+    return solveFromCell(board, row, col + 1)
+  }
+
+  // Try each possible value for the empty cell
+  for (let num = 1; num <= BOARD_SIZE; num++) {
+    if (canPlaceValue(num, row, col, board)) {
+      board[row][col] = num
+      if (solveFromCell(board, row, col + 1)) {
+        return true
+      }
+    }
+    // Backtrack: reset cell to 0 and try the next value
+    board[row][col] = 0
+  }
+
+  return false
 }
 
 function isSudokuValid(board: number[][]): boolean {
@@ -61,7 +62,7 @@ function isSudokuValid(board: number[][]): boolean {
   for (const row of board) {
     for (const cell of row) {
       if (cell !== 0) clues++
-      if (clues >= 17) return true
+      if (clues >= MINIMUM_CLUES) return true
     }
   }
 

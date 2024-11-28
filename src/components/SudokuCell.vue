@@ -19,6 +19,7 @@ const isDefault = props.value !== 0
 const currentValue = ref(props.value)
 
 const hasMarkers = ref(false)
+const isInvalid = ref(false)
 
 function handleUpdate(markers: Ref<Set<number>>) {
   hasMarkers.value = markers.value.size > 1
@@ -26,6 +27,7 @@ function handleUpdate(markers: Ref<Set<number>>) {
   const newValue = markers.value.size === 1 ? Array.from(markers.value)[0] : 0
 
   currentValue.value = newValue
+  isInvalid.value = false
 }
 
 // Sync local state with store on value change
@@ -43,10 +45,24 @@ watch(currentValue, (newValue) => {
     store.updateCell(props.coords.x, props.coords.y, newValue)
   }
 })
+
+store.$onAction(({ name, after }) => {
+  if (name === 'validate') {
+    after(() => {
+      if (isDefault || currentValue.value === 0) return
+      if (store.solution![props.coords.x][props.coords.y] !== currentValue.value) {
+        isInvalid.value = true
+      }
+    })
+  }
+})
 </script>
 
 <template>
-  <div class="cell" :class="{ 'cell--default': isDefault, 'has-markers': hasMarkers }">
+  <div
+    class="cell"
+    :class="{ 'cell--default': isDefault, 'has-markers': hasMarkers, 'cell--invalid': isInvalid }"
+  >
     <!-- {{ currentValue }} -->
     <div class="number-container">
       {{ currentValue !== 0 ? currentValue : '' }}

@@ -12,13 +12,15 @@ onMounted(() => {
 function handleRestart() {
   store.loadBoard()
 }
+
 function handleNew() {
   store.deleteSeed()
+  store.deleteSolution()
   store.loadBoard()
 }
+
 function handleValidate() {
-  // solveBoard()
-  console.log('validate')
+  store.validate()
 }
 </script>
 
