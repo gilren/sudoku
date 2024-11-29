@@ -2,14 +2,13 @@ const BOARD_SIZE = 9
 const BLOCK_SIZE = Math.sqrt(BOARD_SIZE)
 const MINIMUM_CLUES = 17
 
-export function solveBoard(initialBoard: number[][]) {
+export function solveBoard(initialBoard: number[][]): number[][] | null {
   if (!isSudokuValid(initialBoard)) {
     console.error('Sudoku is not valid.')
-    return
+    return null
   }
+  let solution: number[][] | null = null
   const board = initialBoard.map((arr) => [...arr])
-
-  let solution: number[][] | undefined = undefined
 
   if (solveFromCell(board, 0, 0)) {
     console.log('Sudoku was solved successfully')
