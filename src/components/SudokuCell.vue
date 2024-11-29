@@ -138,7 +138,7 @@ store.$onAction(({ name, after }) => {
   justify-content: center;
   align-items: center;
   height: 100%;
-  font-size: 2.5em;
+  font-size: 1.5em;
   position: absolute;
   top: 0;
   right: 0;
@@ -171,5 +171,11 @@ store.$onAction(({ name, after }) => {
 .cell:not(.cell--default):hover .marker-container,
 .cell.has-markers .marker-container {
   opacity: 1;
+}
+
+@container (min-width: 600px) {
+  .cell {
+    font-size: 2em;
+  }
 }
 </style>

@@ -79,7 +79,7 @@ function isMarkerActive(marker: number) {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 0.675em;
+  font-size: 0.45em;
   font-weight: 400;
   color: var(--whisper);
   cursor: pointer;
@@ -141,5 +141,11 @@ function isMarkerActive(marker: number) {
 
 .marker-container:hover .marker:hover {
   opacity: 1;
+}
+
+@container (min-width: 600px) {
+  .marker {
+    font-size: 0.675em;
+  }
 }
 </style>

@@ -10,6 +10,7 @@ const cellRefs: Ref<ComponentPublicInstance<typeof SudokuCell>[]> = ref([])
 const activeCell = ref<ComponentPublicInstance<typeof SudokuCell> | null>(null)
 
 onMounted(() => {
+  store.loadBoard()
   window.addEventListener('keydown', handleKeypress)
 })
 
@@ -65,18 +66,8 @@ const flattenedBoard = computed(() => store.getFlattenedBoard)
 </template>
 
 <style scoped>
-pre {
-  position: absolute;
-  background: black;
-  width: 30%;
-  padding: 1rem;
-  right: 0;
-  z-index: 2;
-  top: 0;
-}
 .sudoku__grid {
   width: 100%;
-  height: 100%;
   border: 2px solid var(--blue-violet);
   user-select: none;
   display: grid;
@@ -85,6 +76,8 @@ pre {
   border-radius: 15px;
   overflow: hidden;
   flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  container-type: inline-size;
 }
 
 .sudoku__grid .cell:nth-child(9n + 3),

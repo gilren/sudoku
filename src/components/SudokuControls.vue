@@ -59,31 +59,39 @@ function restartTimer() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  container-type: inline-size;
 }
 
-select {
-  display: inline-block;
-  border: none;
-  background: var(--blue-violet);
-  color: var(--whisper);
-  font-size: 18px;
-  padding: 0.75em 1em;
-  cursor: pointer;
-  transition: all 250ms ease-in-out;
-  border-radius: 5px;
-}
-
+select,
 .btn {
   display: inline-block;
   border: none;
-  background: transparent;
   color: var(--whisper);
-  background: var(--blue-violet);
-  font-size: 18px;
-  padding: 0.75em 1.75em;
+  font-size: 16px;
   cursor: pointer;
-  transition: all 250ms ease-out;
+  transition: all 250ms ease-in-out;
+  padding: 0.75em 1em;
   border-radius: 5px;
+  background: var(--blue-violet);
+}
+
+.btn {
+  padding: 0.75em 1.75em;
+}
+
+@container (min-width:600px) {
+  .sudoku__actions {
+    padding: 0;
+  }
+  .btn,
+  select {
+    font-size: 18px;
+    padding: 0.75em 1.75em;
+  }
+
+  select {
+    padding: 0.75em 1em;
+  }
 }
 
 .btn:hover {

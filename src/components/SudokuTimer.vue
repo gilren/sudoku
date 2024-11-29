@@ -54,10 +54,21 @@ onUnmounted(() => {
 <style scoped>
 .sudoku__timer {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+
+  container-type: inline-size;
 }
 
 .timer {
-  font-size: 2rem;
+  font-size: 1.5rem;
+}
+
+@container (min-width: 600px) {
+  .sudoku__timer {
+    margin-bottom: 2rem;
+  }
+  .timer {
+    font-size: 2rem;
+  }
 }
 </style>
