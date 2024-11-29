@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useGameStore } from '@/store/game'
 import { timeToText } from '@/utils/utils'
 import { onMounted, onUnmounted, ref, watch } from 'vue'
+
+const store = useGameStore()
 
 const props = defineProps({
   restartKey: {
@@ -9,39 +12,70 @@ const props = defineProps({
   },
 })
 
-const timerInterval = ref()
 const timerValue = ref('')
+let timerInterval: ReturnType<typeof setInterval> | null = null
+let elapsedTime = 0
+let lastStartTime = 0
 
 function startTimer() {
-  stopTimer()
-  console.log('Starting timer')
-  const startTime = new Date().getTime()
+  lastStartTime = new Date().getTime()
 
-  const updateTimer = () => {
+  timerValue.value = timeToText(elapsedTime)
+
+  timerInterval = setInterval(() => {
     const now = new Date().getTime()
-    const elapsedTime = now - startTime
+    timerValue.value = timeToText(elapsedTime + (now - lastStartTime))
+  }, 1000)
+}
 
-    timerValue.value = timeToText(elapsedTime)
+function pauseTimer() {
+  if (timerInterval) {
+    elapsedTime += Date.now() - lastStartTime
+    clearTimer()
   }
-
-  timerInterval.value = setInterval(updateTimer, 1000)
-  updateTimer()
 }
 
-function stopTimer() {
-  console.log('Stopping timer')
-  clearInterval(timerInterval.value)
-  timerValue.value = ''
+function clearTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
 }
 
-watch(() => props.restartKey, startTimer)
+watch(
+  () => props.restartKey,
+  () => {
+    elapsedTime = 0
+    startTimer()
+  },
+)
+
+watch(
+  () => store.status,
+  (newstatus) => {
+    if (newstatus === 'solved') {
+      clearTimer()
+    }
+  },
+  { immediate: true },
+)
+
+function handleWindowVisibility() {
+  if (document.hidden) {
+    pauseTimer()
+  } else {
+    startTimer()
+  }
+}
 
 onMounted(() => {
+  document.addEventListener('visibilitychange', handleWindowVisibility)
   startTimer()
 })
 
 onUnmounted(() => {
-  stopTimer()
+  document.removeEventListener('visibilitychange', handleWindowVisibility)
+  clearTimer()
 })
 </script>
 
