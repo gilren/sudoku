@@ -44,7 +44,9 @@ watch(
   () => props.value,
   (newValue) => {
     currentValue.value = newValue
-    isInvalid.value = false
+    if (newValue === 0) {
+      isInvalid.value = false
+    }
   },
   { immediate: true },
 )
@@ -79,8 +81,8 @@ store.$onAction(({ name, after }) => {
       {{ currentValue !== 0 ? currentValue : '' }}
     </div>
     <div class="helper">
-      <!-- {{ props.index }} -->
-      <!-- {{ props.coords }} -->
+      <!-- {{ props.index }}
+      {{ props.coords }} -->
     </div>
 
     <SudokuMarker
