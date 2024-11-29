@@ -143,7 +143,7 @@ function isMarkerActive(marker: number) {
   opacity: 1;
 }
 
-@container (min-width: 600px) {
+@container (min-width: 1000px) {
   .marker {
     font-size: 0.675em;
   }

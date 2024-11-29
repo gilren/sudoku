@@ -1,13 +1,10 @@
-:root {
-  /* Background/Dark Purple: #2A2158 */
-  /* Lighter Purple: #4C3F8E */
-  /* Pastel Blue: #6C63B8 */
-  /* Soft Red (like the selected button): #D45D79 */
-  /* Bright Pink: #F77FA6 */
-  /* Soft Pastel Orange: #F3B47A */
-  /* Pastel Green: #8AB17D */
-  /* Neutral Light Gray: #E8E8F3  */
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
 
+:root {
   --port-gore: #1e193f;
   --victoria: #534491;
   --blue-violet: #6456b7;
@@ -44,8 +41,14 @@ body {
   height: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-
+  padding-top: 2rem;
   background: var(--port-gore);
   color: var(--whisper);
+}
+
+@media (min-width: 1200px) {
+  #app {
+    padding-top: 0;
+    align-items: center;
+  }
 }

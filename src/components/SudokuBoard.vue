@@ -47,10 +47,6 @@ const flattenedBoard = computed(() => store.getFlattenedBoard)
 </script>
 
 <template>
-  <!-- <pre>
-    {{ store.undoStack }}
-
-  </pre> -->
   <div v-if="store.loading" class="loading">Loading...</div>
   <div v-else class="sudoku__grid" @mouseleave="handleMouseLeave()">
     <SudokuCell

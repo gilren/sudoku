@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineProps, ref, watch, type ComponentPublicInstance, type Ref } from 'vue'
+import { defineProps, ref, watch, type ComponentPublicInstance } from 'vue'
 import SudokuMarker from '@/components/SudokuMarker.vue'
 
 import { useGameStore } from '@/store/game'
@@ -34,22 +34,17 @@ defineExpose({
 
 function handleUpdate(updatedMarkers: Set<number>) {
   hasMarkers.value = updatedMarkers.size > 1
-
   const newValue = updatedMarkers.size === 1 ? Array.from(updatedMarkers)[0] : 0
-
   currentValue.value = newValue
 
-  isInvalid.value = false
-
-  // store.updateMarkers(props.coords.x, props.coords.y, updatedMarkers.value)
   store.updateCell(props.coords.x, props.coords.y, newValue, updatedMarkers)
 }
 
-// Sync local state with store on value change
 watch(
   () => props.value,
   (newValue) => {
     currentValue.value = newValue
+    isInvalid.value = false
   },
   { immediate: true },
 )
@@ -61,12 +56,6 @@ watch(
   },
   { immediate: true },
 )
-
-// Propagate local state to store
-// watch(currentValue, (newValue) => {
-//   if (newValue !== props.value) {
-//   }
-// })
 
 store.$onAction(({ name, after }) => {
   if (name === 'validate') {
@@ -118,7 +107,6 @@ store.$onAction(({ name, after }) => {
 
 .cell.cell--default {
   color: var(--whisper);
-  /* background: var(--port-gore); */
 
   background: repeating-linear-gradient(
     55deg,
@@ -172,8 +160,13 @@ store.$onAction(({ name, after }) => {
 .cell.has-markers .marker-container {
   opacity: 1;
 }
-
 @container (min-width: 600px) {
+  .cell {
+    font-size: 1.75em;
+  }
+}
+
+@container (min-width: 800px) {
   .cell {
     font-size: 2em;
   }

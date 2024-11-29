@@ -48,7 +48,7 @@ function restartTimer() {
       </select>
       <button class="btn" @click="handleRestart">Restart</button>
       <button class="btn" @click="handleNew">New</button>
-      <button class="btn" @click="handleValidate">Validate</button>
+      <button class="btn btn-validate" @click="handleValidate">Validate</button>
     </div>
   </div>
 </template>
@@ -77,6 +77,10 @@ select,
 
 .btn {
   padding: 0.75em 1.75em;
+}
+
+.btn-validate {
+  background-color: var(--olivine);
 }
 
 @container (min-width:600px) {
