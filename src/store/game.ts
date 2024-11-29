@@ -1,5 +1,6 @@
 import { solveBoard } from '@/Solver'
-import { Difficulty, type UndoAction } from '@/utils/types'
+import { BOARD_SIZE } from '@/utils/constants'
+import { Difficulty, type Duplicate, type Status, type UndoAction } from '@/utils/types'
 import { isDifficulty } from '@/utils/utils'
 import { defineStore } from 'pinia'
 
@@ -8,10 +9,11 @@ interface GameState {
   board: number[][]
   markers: Set<number>[][]
   difficulty: Difficulty
-  loading: boolean
+  status: Status
   seed?: number
-  solution?: number[][]
+  solution: number[][] | null
   undoStack: UndoAction[]
+  errors: Duplicate[]
 }
 
 function initStoreDifficulty(): Difficulty {
@@ -29,9 +31,11 @@ export const useGameStore = defineStore('game', {
         .map(() => new Set<number>()),
     ),
     difficulty: initStoreDifficulty(),
-    loading: false,
+    status: 'init',
     seed: undefined,
+    solution: null,
     undoStack: [],
+    errors: [],
   }),
   getters: {
     getDifficulty: (state) => {
@@ -47,7 +51,7 @@ export const useGameStore = defineStore('game', {
       return state.board.flatMap((row, rowIdx) =>
         row.map((value, colIdx) => ({
           value,
-          index: rowIdx * state.board[0].length + colIdx,
+          index: rowIdx * BOARD_SIZE + colIdx,
           coords: { x: colIdx, y: rowIdx },
         })),
       )
@@ -67,13 +71,13 @@ export const useGameStore = defineStore('game', {
       }
     },
 
-    setSolution(solution: number[][] | undefined) {
+    setSolution(solution: number[][] | null) {
       this.solution = solution
     },
 
     async loadBoard() {
       try {
-        this.loading = true
+        this.status = 'loading'
         const difficulty = this.getDifficulty
         this.deleteBoards()
 
@@ -84,8 +88,9 @@ export const useGameStore = defineStore('game', {
         this.board = JSON.parse(JSON.stringify(data[seed]))
         this.initialBoard = JSON.parse(JSON.stringify(data[seed]))
         console.log(`Loading board with difficulty ${difficulty} and seed ${seed}`)
-        this.loading = false
+        this.status = 'playing'
       } catch (e) {
+        this.status = 'failure'
         console.error('Failed to load board:', e)
         throw e
       }
@@ -115,7 +120,7 @@ export const useGameStore = defineStore('game', {
     },
 
     deleteSolution() {
-      this.setSolution(undefined)
+      this.setSolution(null)
     },
 
     deleteMarkers() {
@@ -142,11 +147,56 @@ export const useGameStore = defineStore('game', {
 
       this.board[y][x] = value
       this.markers[y][x] = newMarkersCopy
+
+      if (!this.getFlattenedBoard.some((cell) => cell.value === 0)) {
+        this.finish()
+      }
     },
 
-    validate() {
+    finish() {
+      if (this.validate(true)) {
+        this.status = 'solved'
+        alert('Congrats, the sudoku is solved')
+      }
+    },
+
+    validate(filled: boolean = false): boolean {
       if (!this.getSolution) {
         this.setSolution(solveBoard(this.getInitialBoard))
+      }
+
+      if (!this.getBoard || !this.getSolution) {
+        console.error('Active board or solution is null')
+        return false
+      }
+
+      if (filled) {
+        const errors: Duplicate[] = []
+
+        for (let y = 0; y < BOARD_SIZE; y++) {
+          for (let x = 0; x < BOARD_SIZE; x++) {
+            const current = this.getBoard[y][x]
+            if (current === 0) continue
+            if (current !== this.getSolution[y][x]) {
+              const error: Duplicate = {
+                value: current,
+                id: x * BOARD_SIZE + y,
+              }
+              errors.push(error)
+              // console.log(`Error found at ${x}, ${y}, value: ${current}`)
+            }
+          }
+        }
+
+        if (errors.length > 0) {
+          console.log('Sudoku has errors')
+          return false
+        } else {
+          console.log('Sudoku is valid')
+          return true
+        }
+      } else {
+        return false
       }
     },
 

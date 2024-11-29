@@ -1,5 +1,5 @@
-const BOARD_SIZE = 9
-const BLOCK_SIZE = Math.sqrt(BOARD_SIZE)
+import { BOARD_SIZE, BLOCK_SIZE } from './utils/constants'
+
 const MINIMUM_CLUES = 17
 
 export function solveBoard(initialBoard: number[][]): number[][] | null {
@@ -11,7 +11,7 @@ export function solveBoard(initialBoard: number[][]): number[][] | null {
   const board = initialBoard.map((arr) => [...arr])
 
   if (solveFromCell(board, 0, 0)) {
-    console.log('Sudoku was solved successfully')
+    // console.log('Sudoku was solved successfully')
     solution = board
   }
 
