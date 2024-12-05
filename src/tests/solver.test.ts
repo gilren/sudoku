@@ -73,7 +73,7 @@ describe('solver', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
 
-    const solution = solveBoard(raw)
+    const solution = solveBoard(raw as number[][])
 
     expect(solution).toEqual(null)
   })
