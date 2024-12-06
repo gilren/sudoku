@@ -97,7 +97,7 @@ store.$onAction(({ name, after }) => {
 <style scoped>
 .cell {
   border: 1px solid color-mix(in srgb, var(--blue-violet) 20%, transparent);
-  font-size: 16px;
+  font-size: 14px;
   text-align: center;
   font-weight: 700;
   position: relative;
@@ -113,9 +113,9 @@ store.$onAction(({ name, after }) => {
   background: repeating-linear-gradient(
     55deg,
     transparent,
-    transparent 10px,
-    rgba(0, 0, 0, 0.18) 10px,
-    rgba(0, 0, 0, 0.18) 20px
+    transparent 5px,
+    rgba(0, 0, 0, 0.18) 5px,
+    rgba(0, 0, 0, 0.18) 10px
   );
 }
 
@@ -164,7 +164,17 @@ store.$onAction(({ name, after }) => {
 }
 @container (min-width: 600px) {
   .cell {
-    font-size: 1.75em;
+    font-size: 1.5em;
+  }
+
+  .cell.cell--default {
+    background: repeating-linear-gradient(
+      55deg,
+      transparent,
+      transparent 10px,
+      rgba(0, 0, 0, 0.18) 10px,
+      rgba(0, 0, 0, 0.18) 20px
+    );
   }
 }
 
