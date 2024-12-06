@@ -48,7 +48,12 @@ const flattenedBoard = computed(() => store.getFlattenedBoard)
 
 <template>
   <div v-if="store.status === 'loading'" class="loading">Loading...</div>
-  <div v-else class="sudoku__grid" @mouseleave="handleMouseLeave()">
+  <div
+    v-else
+    class="sudoku__grid"
+    :class="[store.status === 'solved' ? 'disabled' : '']"
+    @mouseleave="handleMouseLeave()"
+  >
     <SudokuCell
       v-for="(cell, idx) in flattenedBoard"
       :key="cell.index"
@@ -74,6 +79,10 @@ const flattenedBoard = computed(() => store.getFlattenedBoard)
   flex-shrink: 0;
   aspect-ratio: 1 / 1;
   container-type: inline-size;
+}
+
+.sudoku__grid.disabled {
+  pointer-events: none;
 }
 
 .sudoku__grid .cell:nth-child(9n + 3),

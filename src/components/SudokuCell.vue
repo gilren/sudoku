@@ -97,7 +97,7 @@ store.$onAction(({ name, after }) => {
 <style scoped>
 .cell {
   border: 1px solid color-mix(in srgb, var(--blue-violet) 20%, transparent);
-  font-size: 20px;
+  font-size: 16px;
   text-align: center;
   font-weight: 700;
   position: relative;

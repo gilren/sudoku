@@ -62,23 +62,6 @@ function restartTimer() {
   container-type: inline-size;
 }
 
-select,
-.btn {
-  display: inline-block;
-  border: none;
-  color: var(--whisper);
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 250ms ease-in-out;
-  padding: 0.75em 1em;
-  border-radius: 5px;
-  background: var(--blue-violet);
-}
-
-.btn {
-  padding: 0.75em 1.75em;
-}
-
 .btn-validate {
   background-color: var(--olivine);
 }
@@ -96,9 +79,5 @@ select,
   select {
     padding: 0.75em 1em;
   }
-}
-
-.btn:hover {
-  background: var(--cranberry);
 }
 </style>

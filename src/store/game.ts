@@ -131,6 +131,10 @@ export const useGameStore = defineStore('game', {
       )
     },
 
+    deleteUndoStack() {
+      this.undoStack = []
+    },
+
     updateCell(x: number, y: number, value: number, newMarkers: Set<number>) {
       const previousValue = this.board[y][x]
       const previousMarkers = new Set(this.markers[y][x])
@@ -156,7 +160,7 @@ export const useGameStore = defineStore('game', {
     finish() {
       if (this.validate(true)) {
         this.status = 'solved'
-        alert('Congrats, the sudoku is solved')
+        this.deleteUndoStack()
       }
     },
 
@@ -219,6 +223,7 @@ export const useGameStore = defineStore('game', {
 
     restartGame() {
       this.deleteMarkers()
+      this.deleteUndoStack()
       this.loadBoard()
     },
 
@@ -226,6 +231,7 @@ export const useGameStore = defineStore('game', {
       this.deleteSeed()
       this.deleteSolution()
       this.deleteMarkers()
+      this.deleteUndoStack()
       this.loadBoard()
     },
   },

@@ -61,6 +61,7 @@ watch(
 )
 
 function handleWindowVisibility() {
+  if (store.status === 'solved') return
   if (document.hidden) {
     pauseTimer()
   } else {

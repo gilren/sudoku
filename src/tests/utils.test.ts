@@ -1,5 +1,4 @@
 import { expect, test, describe } from 'vitest'
-import { Difficulty } from '@/utils/types'
 import { isDifficulty, isAllowedKey } from '@/utils/utils'
 
 describe('isDifficulty', () => {
