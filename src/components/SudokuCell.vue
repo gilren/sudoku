@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { defineProps, ref, watch, type ComponentPublicInstance } from 'vue'
-import SudokuMarker from '@/components/SudokuMarker.vue'
+import { type ComponentPublicInstance, ref, watch } from "vue"
+import type SudokuMarker from "@/components/SudokuMarker.vue"
 
-import { useGameStore } from '@/store/game'
-import type { Coords } from '@/utils/types'
+import { useGameStore } from "@/store/game"
+import type { Coords } from "@/utils/types"
 
 const store = useGameStore()
 
 const props = defineProps<{
-  value: number
-  index: number
-  coords: Coords
+	value: number
+	index: number
+	coords: Coords
 }>()
 
 const isDefault = props.value !== 0
@@ -23,51 +23,51 @@ const hasMarkers = ref(false)
 const isInvalid = ref(false)
 
 function sendKey(key: number) {
-  if (markers.value) {
-    markers.value.sendKey(key)
-  }
+	if (markers.value) {
+		markers.value.sendKey(key)
+	}
 }
 
 defineExpose({
-  sendKey,
+	sendKey,
 })
 
 function handleUpdate(updatedMarkers: Set<number>) {
-  hasMarkers.value = updatedMarkers.size > 1
-  const newValue = updatedMarkers.size === 1 ? Array.from(updatedMarkers)[0] : 0
-  currentValue.value = newValue
+	hasMarkers.value = updatedMarkers.size > 1
+	const newValue = updatedMarkers.size === 1 ? Array.from(updatedMarkers)[0] : 0
+	currentValue.value = newValue
 
-  store.updateCell(props.coords.x, props.coords.y, newValue, updatedMarkers)
+	store.updateCell(props.coords.x, props.coords.y, newValue, updatedMarkers)
 }
 
 watch(
-  () => props.value,
-  (newValue) => {
-    currentValue.value = newValue
-    if (newValue === 0) {
-      isInvalid.value = false
-    }
-  },
-  { immediate: true },
+	() => props.value,
+	(newValue) => {
+		currentValue.value = newValue
+		if (newValue === 0) {
+			isInvalid.value = false
+		}
+	},
+	{ immediate: true },
 )
 
 watch(
-  () => store.markers[props.coords.y][props.coords.x],
-  (newMarkers) => {
-    hasMarkers.value = newMarkers.size > 1
-  },
-  { immediate: true },
+	() => store.markers[props.coords.y][props.coords.x],
+	(newMarkers) => {
+		hasMarkers.value = newMarkers.size > 1
+	},
+	{ immediate: true },
 )
 
 store.$onAction(({ name, after }) => {
-  if (name === 'validate') {
-    after(() => {
-      if (isDefault || currentValue.value === 0) return
-      if (store.solution![props.coords.y][props.coords.x] !== currentValue.value) {
-        isInvalid.value = true
-      }
-    })
-  }
+	if (name === "validate") {
+		after(() => {
+			if (isDefault || currentValue.value === 0) return
+			if (store.solution![props.coords.y][props.coords.x] !== currentValue.value) {
+				isInvalid.value = true
+			}
+		})
+	}
 })
 </script>
 

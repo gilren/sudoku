@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Difficulty } from '@/utils/types'
-import SudokuTimer from '@/components/SudokuTimer.vue'
-
-import { ref } from 'vue'
-import { useGameStore } from '@/store/game'
+import { ref } from "vue"
+import SudokuTimer from "@/components/SudokuTimer.vue"
+import { useGameStore } from "@/store/game"
+import { Difficulty } from "@/utils/types"
 
 const store = useGameStore()
 const currentDifficulty = ref(store.getDifficulty)
@@ -13,27 +12,27 @@ const timerKey = ref(0)
 const difficulties = ref(Difficulty)
 
 function changeDifficulty() {
-  store.setDifficulty(currentDifficulty.value)
-  store.newGame()
-  restartTimer()
+	store.setDifficulty(currentDifficulty.value)
+	store.newGame()
+	restartTimer()
 }
 
 function handleRestart() {
-  restartTimer()
-  store.restartGame()
+	restartTimer()
+	store.restartGame()
 }
 
 function handleNew() {
-  restartTimer()
-  store.newGame()
+	restartTimer()
+	store.newGame()
 }
 
 function handleValidate() {
-  store.validate()
+	store.validate()
 }
 
 function restartTimer() {
-  timerKey.value++
+	timerKey.value++
 }
 </script>
 

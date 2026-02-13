@@ -1,82 +1,82 @@
 <script setup lang="ts">
-import { useGameStore } from '@/store/game'
-import { timeToText } from '@/utils/utils'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from "vue"
+import { useGameStore } from "@/store/game"
+import { timeToText } from "@/utils/utils"
 
 const store = useGameStore()
 
 const props = defineProps({
-  restartKey: {
-    type: Number,
-    required: true,
-  },
+	restartKey: {
+		type: Number,
+		required: true,
+	},
 })
 
-const timerValue = ref('')
+const timerValue = ref("")
 let timerInterval: ReturnType<typeof setInterval> | null = null
 let elapsedTime = 0
 let lastStartTime = 0
 
 function startTimer() {
-  lastStartTime = new Date().getTime()
+	lastStartTime = new Date().getTime()
 
-  timerValue.value = timeToText(elapsedTime)
+	timerValue.value = timeToText(elapsedTime)
 
-  timerInterval = setInterval(() => {
-    const now = new Date().getTime()
-    timerValue.value = timeToText(elapsedTime + (now - lastStartTime))
-  }, 1000)
+	timerInterval = setInterval(() => {
+		const now = new Date().getTime()
+		timerValue.value = timeToText(elapsedTime + (now - lastStartTime))
+	}, 1000)
 }
 
 function pauseTimer() {
-  if (timerInterval) {
-    elapsedTime += Date.now() - lastStartTime
-    clearTimer()
-  }
+	if (timerInterval) {
+		elapsedTime += Date.now() - lastStartTime
+		clearTimer()
+	}
 }
 
 function clearTimer() {
-  if (timerInterval) {
-    clearInterval(timerInterval)
-    timerInterval = null
-  }
+	if (timerInterval) {
+		clearInterval(timerInterval)
+		timerInterval = null
+	}
 }
 
 watch(
-  () => props.restartKey,
-  () => {
-    elapsedTime = 0
-    startTimer()
-  },
+	() => props.restartKey,
+	() => {
+		elapsedTime = 0
+		startTimer()
+	},
 )
 
 watch(
-  () => store.status,
-  (newstatus) => {
-    if (newstatus === 'solved') {
-      clearTimer()
-    }
-  },
-  { immediate: true },
+	() => store.status,
+	(newstatus) => {
+		if (newstatus === "solved") {
+			clearTimer()
+		}
+	},
+	{ immediate: true },
 )
 
 function handleWindowVisibility() {
-  if (store.status === 'solved') return
-  if (document.hidden) {
-    pauseTimer()
-  } else {
-    startTimer()
-  }
+	if (store.status === "solved") return
+	if (document.hidden) {
+		pauseTimer()
+	} else {
+		startTimer()
+	}
 }
 
 onMounted(() => {
-  document.addEventListener('visibilitychange', handleWindowVisibility)
-  startTimer()
+	document.addEventListener("visibilitychange", handleWindowVisibility)
+	startTimer()
 })
 
 onUnmounted(() => {
-  document.removeEventListener('visibilitychange', handleWindowVisibility)
-  clearTimer()
+	document.removeEventListener("visibilitychange", handleWindowVisibility)
+	clearTimer()
 })
 </script>
 

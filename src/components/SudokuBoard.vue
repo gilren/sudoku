@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import SudokuCell from '@/components/SudokuCell.vue'
-import { computed, onMounted, onUnmounted, ref, type ComponentPublicInstance, type Ref } from 'vue'
-import { useGameStore } from '@/store/game'
-import { isAllowedKey } from '@/utils/utils'
+import { type ComponentPublicInstance, computed, onMounted, onUnmounted, type Ref, ref } from "vue"
+import type SudokuCell from "@/components/SudokuCell.vue"
+import { useGameStore } from "@/store/game"
+import { isAllowedKey } from "@/utils/utils"
 
 const store = useGameStore()
 
@@ -10,37 +10,37 @@ const cellRefs: Ref<ComponentPublicInstance<typeof SudokuCell>[]> = ref([])
 const activeCell = ref<ComponentPublicInstance<typeof SudokuCell> | null>(null)
 
 onMounted(() => {
-  store.loadBoard()
-  window.addEventListener('keydown', handleKeypress)
+	store.loadBoard()
+	window.addEventListener("keydown", handleKeypress)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeypress)
+	window.removeEventListener("keydown", handleKeypress)
 })
 
 function handleKeypress(e: KeyboardEvent) {
-  let key = e.key
-  if ((e.ctrlKey || e.metaKey) && key === 'z') {
-    e?.preventDefault()
-    store.undo()
-  }
+	let key = e.key
+	if ((e.ctrlKey || e.metaKey) && key === "z") {
+		e?.preventDefault()
+		store.undo()
+	}
 
-  if (activeCell.value) {
-    if (key === 'Backspace' || key === 'Delete') {
-      key = '0'
-    }
-    if (isAllowedKey(key)) {
-      activeCell.value.sendKey(key)
-    }
-  }
+	if (activeCell.value) {
+		if (key === "Backspace" || key === "Delete") {
+			key = "0"
+		}
+		if (isAllowedKey(key)) {
+			activeCell.value.sendKey(key)
+		}
+	}
 }
 
 function handleMouseEnter(index: number) {
-  activeCell.value = cellRefs.value[index]
+	activeCell.value = cellRefs.value[index]
 }
 
 function handleMouseLeave() {
-  activeCell.value = null
+	activeCell.value = null
 }
 
 const flattenedBoard = computed(() => store.getFlattenedBoard)

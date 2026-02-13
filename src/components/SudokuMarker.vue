@@ -1,48 +1,48 @@
 <script setup lang="ts">
-import { useTemplateRef } from 'vue'
+import { useTemplateRef } from "vue"
 
-const markersRef = useTemplateRef('marker')
+const markersRef = useTemplateRef("marker")
 
 const props = defineProps<{
-  markers: Set<number>
+	markers: Set<number>
 }>()
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(["update"])
 
 function sendKey(key: number) {
-  let index = Number(key)
-  if (index === 0) index--
-  updateMarker(index)
+	let index = Number(key)
+	if (index === 0) index--
+	updateMarker(index)
 }
 
 defineExpose({
-  sendKey,
+	sendKey,
 })
 
 function handleClick(e: MouseEvent) {
-  if (markersRef.value) {
-    const index = markersRef.value.findIndex((el) => el === e.target) + 1
-    if (index === 0) return
-    updateMarker(index)
-  }
+	if (markersRef.value) {
+		const index = markersRef.value.findIndex((el) => el === e.target) + 1
+		if (index === 0) return
+		updateMarker(index)
+	}
 }
 
 function updateMarker(index: number) {
-  if (index !== -1) {
-    const updatedMarkers = new Set(props.markers)
-    if (updatedMarkers.has(index)) {
-      updatedMarkers.delete(index)
-    } else {
-      updatedMarkers.add(index)
-    }
-    emit('update', updatedMarkers)
-  } else {
-    emit('update', [])
-  }
+	if (index !== -1) {
+		const updatedMarkers = new Set(props.markers)
+		if (updatedMarkers.has(index)) {
+			updatedMarkers.delete(index)
+		} else {
+			updatedMarkers.add(index)
+		}
+		emit("update", updatedMarkers)
+	} else {
+		emit("update", [])
+	}
 }
 
 function isMarkerActive(marker: number) {
-  return props.markers.has(marker)
+	return props.markers.has(marker)
 }
 </script>
 

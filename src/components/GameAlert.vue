@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch } from "vue"
 
 const props = defineProps({
-  show: {
-    type: Boolean,
-    required: true,
-  },
+	show: {
+		type: Boolean,
+		required: true,
+	},
 })
 
 const show = ref(props.show)
 
 watch(
-  () => props.show,
-  (newShow) => {
-    show.value = newShow
-  },
+	() => props.show,
+	(newShow) => {
+		show.value = newShow
+	},
 )
 
 function close() {
-  show.value = false
+	show.value = false
 }
 </script>
 
