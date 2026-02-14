@@ -11,11 +11,4 @@
     "enabled": true,
   },
   "compatibility_flags": ["nodejs_compat"],
-
-  "routes": [
-    {
-      "pattern": "sudoku.renaudgillet.be",
-      "custom_domain": true,
-    },
-  ],
 }
