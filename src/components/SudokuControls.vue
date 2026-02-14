@@ -1,38 +1,36 @@
 <script setup lang="ts">
-import { ref } from "vue"
-import SudokuTimer from "@/components/SudokuTimer.vue"
-import { useGameStore } from "@/store/game"
-import { Difficulty } from "@/utils/types"
+import { ref } from 'vue'
+import { useGameStore } from '@/store/game'
+import SudokuTimer from '@/components/SudokuTimer.vue'
+import { DIFFICULTIES } from '@/types'
 
 const store = useGameStore()
-const currentDifficulty = ref(store.getDifficulty)
 
+const currentDifficulty = ref(store.getDifficulty)
 const timerKey = ref(0)
 
-const difficulties = ref(Difficulty)
-
 function changeDifficulty() {
-	store.setDifficulty(currentDifficulty.value)
-	store.newGame()
-	restartTimer()
+  store.setDifficulty(currentDifficulty.value)
+  store.newGame()
+  restartTimer()
 }
 
 function handleRestart() {
-	restartTimer()
-	store.restartGame()
+  restartTimer()
+  store.restartGame()
 }
 
 function handleNew() {
-	restartTimer()
-	store.newGame()
+  restartTimer()
+  store.newGame()
 }
 
 function handleValidate() {
-	store.validate()
+  store.validate()
 }
 
 function restartTimer() {
-	timerKey.value++
+  timerKey.value++
 }
 </script>
 
@@ -41,8 +39,8 @@ function restartTimer() {
     <SudokuTimer :restartKey="timerKey" />
     <div class="sudoku__actions">
       <select name="difficulty" v-model="currentDifficulty" @change="changeDifficulty">
-        <option v-for="option in difficulties" :value="option" :key="option">
-          {{ option[0].toUpperCase() + option.slice(1) }}
+        <option v-for="option in DIFFICULTIES" :value="option" :key="option">
+          {{ option[0]!.toUpperCase() + option.slice(1) }}
         </option>
       </select>
       <button class="btn" @click="handleRestart">Restart</button>
@@ -69,6 +67,7 @@ function restartTimer() {
   .sudoku__actions {
     padding: 0;
   }
+
   .btn,
   select {
     font-size: 18px;

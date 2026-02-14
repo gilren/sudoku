@@ -1,81 +1,83 @@
 <script setup lang="ts">
-import { type ComponentPublicInstance, ref, watch } from "vue"
-import type SudokuMarker from "@/components/SudokuMarker.vue"
+import { type ComponentPublicInstance, computed, ref, watch } from 'vue'
+import { useGameStore } from '@/store/game'
+import SudokuMarker from '@/components/SudokuMarker.vue'
+import type { Coords } from '@/types'
 
-import { useGameStore } from "@/store/game"
-import type { Coords } from "@/utils/types"
+const props = defineProps<{
+  value: number
+  index: number
+  coords: Coords
+}>()
 
 const store = useGameStore()
 
-const props = defineProps<{
-	value: number
-	index: number
-	coords: Coords
-}>()
-
-const isDefault = props.value !== 0
-
 const markers = ref<ComponentPublicInstance<typeof SudokuMarker>>()
-
 const currentValue = ref(props.value)
-
-const hasMarkers = ref(false)
+const hasMultipleMarkers = ref(false)
 const isInvalid = ref(false)
 
+const isDefault = props.value !== 0
+const storeMarkers = computed(() => store.getMarkersForCell(props.coords.y, props.coords.x))
+
+function handleUpdate(updatedMarkers: Set<number> | null) {
+  hasMultipleMarkers.value = updatedMarkers ? updatedMarkers.size > 1 : false
+
+  let newValue = 0
+  if (updatedMarkers && updatedMarkers.size === 1) {
+    newValue = updatedMarkers.values().next().value!
+  }
+
+  store.updateCell(props.coords.x, props.coords.y, newValue, updatedMarkers)
+}
+
+function clean() {
+  if (markers.value) {
+    markers.value.clean()
+  }
+}
+
 function sendKey(key: number) {
-	if (markers.value) {
-		markers.value.sendKey(key)
-	}
-}
-
-defineExpose({
-	sendKey,
-})
-
-function handleUpdate(updatedMarkers: Set<number>) {
-	hasMarkers.value = updatedMarkers.size > 1
-	const newValue = updatedMarkers.size === 1 ? Array.from(updatedMarkers)[0] : 0
-	currentValue.value = newValue
-
-	store.updateCell(props.coords.x, props.coords.y, newValue, updatedMarkers)
+  if (markers.value) {
+    markers.value.sendKey(key)
+  }
 }
 
 watch(
-	() => props.value,
-	(newValue) => {
-		currentValue.value = newValue
-		if (newValue === 0) {
-			isInvalid.value = false
-		}
-	},
-	{ immediate: true },
-)
-
-watch(
-	() => store.markers[props.coords.y][props.coords.x],
-	(newMarkers) => {
-		hasMarkers.value = newMarkers.size > 1
-	},
-	{ immediate: true },
+  () => props.value,
+  (newValue) => {
+    currentValue.value = newValue
+    if (newValue === 0) {
+      isInvalid.value = false
+    }
+  },
+  { immediate: true },
 )
 
 store.$onAction(({ name, after }) => {
-	if (name === "validate") {
-		after(() => {
-			if (isDefault || currentValue.value === 0) return
-			if (store.solution![props.coords.y][props.coords.x] !== currentValue.value) {
-				isInvalid.value = true
-			}
-		})
-	}
+  if (name === 'validate') {
+    after(() => {
+      if (isDefault || currentValue.value === 0) {
+        isInvalid.value = false
+        return
+      }
+      isInvalid.value = store.solution![props.coords.y]![props.coords.x] !== currentValue.value
+    })
+  }
+})
+
+defineExpose({
+  clean,
+  sendKey,
 })
 </script>
 
 <template>
-  <div
-    class="cell"
-    :class="{ 'cell--default': isDefault, 'has-markers': hasMarkers, 'cell--invalid': isInvalid }"
-  >
+  <div class="cell" :class="{
+    'cell--default': isDefault,
+    'has-markers': hasMultipleMarkers,
+    'cell--invalid': isInvalid,
+  }">
     <!-- {{ currentValue }} -->
     <div class="number-container">
       {{ currentValue !== 0 ? currentValue : '' }}
@@ -85,12 +87,7 @@ store.$onAction(({ name, after }) => {
       {{ props.coords }} -->
     </div>
 
-    <SudokuMarker
-      v-if="!isDefault"
-      :markers="store.markers[props.coords.y][props.coords.x]"
-      @update="handleUpdate"
-      ref="markers"
-    />
+    <SudokuMarker v-if="!isDefault" :markers="storeMarkers" @update="handleUpdate" ref="markers" />
   </div>
 </template>
 
@@ -110,17 +107,15 @@ store.$onAction(({ name, after }) => {
 .cell.cell--default {
   color: var(--whisper);
 
-  background: repeating-linear-gradient(
-    55deg,
-    transparent,
-    transparent 5px,
-    rgba(0, 0, 0, 0.18) 5px,
-    rgba(0, 0, 0, 0.18) 10px
-  );
+  background: repeating-linear-gradient(55deg,
+      transparent,
+      transparent 5px,
+      rgba(0, 0, 0, 0.18) 5px,
+      rgba(0, 0, 0, 0.18) 10px);
 }
 
 .cell.cell--invalid {
-  background: var(--rajah);
+  background-color: var(--rajah);
 }
 
 .number-container {
@@ -162,19 +157,18 @@ store.$onAction(({ name, after }) => {
 .cell.has-markers .marker-container {
   opacity: 1;
 }
+
 @container (min-width: 600px) {
   .cell {
     font-size: 1.5em;
   }
 
   .cell.cell--default {
-    background: repeating-linear-gradient(
-      55deg,
-      transparent,
-      transparent 10px,
-      rgba(0, 0, 0, 0.18) 10px,
-      rgba(0, 0, 0, 0.18) 20px
-    );
+    background: repeating-linear-gradient(55deg,
+        transparent,
+        transparent 10px,
+        rgba(0, 0, 0, 0.18) 10px,
+        rgba(0, 0, 0, 0.18) 20px);
   }
 }
 

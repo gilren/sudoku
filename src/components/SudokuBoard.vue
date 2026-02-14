@@ -1,53 +1,56 @@
 <script setup lang="ts">
-import { type ComponentPublicInstance, computed, onMounted, onUnmounted, type Ref, ref } from "vue"
-import type SudokuCell from "@/components/SudokuCell.vue"
-import { useGameStore } from "@/store/game"
-import { isAllowedKey } from "@/utils/utils"
+import { type ComponentPublicInstance, computed, onMounted, onUnmounted, type Ref, ref } from 'vue'
+import { useGameStore } from '@/store/game'
+import SudokuCell from '@/components/SudokuCell.vue'
+import { isAllowedKeyNumber } from '@/lib/utils'
 
 const store = useGameStore()
 
 const cellRefs: Ref<ComponentPublicInstance<typeof SudokuCell>[]> = ref([])
 const activeCell = ref<ComponentPublicInstance<typeof SudokuCell> | null>(null)
 
-onMounted(() => {
-	store.loadBoard()
-	window.addEventListener("keydown", handleKeypress)
-})
-
-onUnmounted(() => {
-	window.removeEventListener("keydown", handleKeypress)
-})
+const flattenedBoard = computed(() => store.getFlattenedBoard)
 
 function handleKeypress(e: KeyboardEvent) {
-	let key = e.key
-	if ((e.ctrlKey || e.metaKey) && key === "z") {
-		e?.preventDefault()
-		store.undo()
-	}
+  e.preventDefault()
+  const key = e.key
+  if (e.ctrlKey && key === 'z') {
+    store.undo()
+  }
 
-	if (activeCell.value) {
-		if (key === "Backspace" || key === "Delete") {
-			key = "0"
-		}
-		if (isAllowedKey(key)) {
-			activeCell.value.sendKey(key)
-		}
-	}
+  if (activeCell.value) {
+    if (key === 'Backspace' || key === 'Delete') {
+      activeCell.value.clean()
+    }
+    if (isAllowedKeyNumber(key)) {
+      activeCell.value.sendKey(key)
+    }
+  }
 }
 
 function handleMouseEnter(index: number) {
-	activeCell.value = cellRefs.value[index]
+  activeCell.value = cellRefs.value[index] ?? null
 }
 
 function handleMouseLeave() {
-	activeCell.value = null
+  activeCell.value = null
 }
 
-const flattenedBoard = computed(() => store.getFlattenedBoard)
+onMounted(() => {
+  store.loadBoard()
+  window.addEventListener('keydown', handleKeypress)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeypress)
+})
 </script>
 
 <template>
-  <div v-if="store.status === 'loading'" class="loading">Loading...</div>
+  <div v-if="store.status === 'loading'" class="sudoku__grid">
+    <div v-for="n in 81" :key="n" class="sudoku__cell skeleton" />
+  </div>
+
   <div
     v-else
     class="sudoku__grid"

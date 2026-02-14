@@ -1,88 +1,74 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from "vue"
-import { useGameStore } from "@/store/game"
-import { timeToText } from "@/utils/utils"
-
-const store = useGameStore()
+import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { useGameStore } from '@/store/game'
+import { timeToText } from '@/lib/utils'
 
 const props = defineProps({
-	restartKey: {
-		type: Number,
-		required: true,
-	},
+  restartKey: {
+    type: Number,
+    required: true,
+  },
 })
 
-const timerValue = ref("")
-let timerInterval: ReturnType<typeof setInterval> | null = null
+const store = useGameStore()
+const timerText = ref('')
+let timerInterval: number | null = null
 let elapsedTime = 0
 let lastStartTime = 0
 
+const updateTimer = () => {
+  timerText.value = timeToText(elapsedTime + (Date.now() - lastStartTime))
+}
+
 function startTimer() {
-	lastStartTime = new Date().getTime()
-
-	timerValue.value = timeToText(elapsedTime)
-
-	timerInterval = setInterval(() => {
-		const now = new Date().getTime()
-		timerValue.value = timeToText(elapsedTime + (now - lastStartTime))
-	}, 1000)
+  if (timerInterval) return
+  lastStartTime = Date.now()
+  timerText.value = timeToText(elapsedTime)
+  timerInterval = setInterval(updateTimer, 1000)
 }
 
 function pauseTimer() {
-	if (timerInterval) {
-		elapsedTime += Date.now() - lastStartTime
-		clearTimer()
-	}
+  if (!timerInterval) return
+  elapsedTime += Date.now() - lastStartTime
+  clearInterval(timerInterval)
+  timerInterval = null
+  timerText.value = timeToText(elapsedTime)
 }
 
-function clearTimer() {
-	if (timerInterval) {
-		clearInterval(timerInterval)
-		timerInterval = null
-	}
+function resetTimer() {
+  elapsedTime = 0
+  startTimer()
 }
+
+function handleVisibilityChange() {
+  if (store.status === 'solved') return
+  document.hidden ? pauseTimer() : startTimer()
+}
+
+watch(() => props.restartKey, resetTimer)
 
 watch(
-	() => props.restartKey,
-	() => {
-		elapsedTime = 0
-		startTimer()
-	},
+  () => store.status,
+  (status) => {
+    if (status === 'solved') pauseTimer()
+  },
+  { immediate: true },
 )
-
-watch(
-	() => store.status,
-	(newstatus) => {
-		if (newstatus === "solved") {
-			clearTimer()
-		}
-	},
-	{ immediate: true },
-)
-
-function handleWindowVisibility() {
-	if (store.status === "solved") return
-	if (document.hidden) {
-		pauseTimer()
-	} else {
-		startTimer()
-	}
-}
 
 onMounted(() => {
-	document.addEventListener("visibilitychange", handleWindowVisibility)
-	startTimer()
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  if (store.status !== 'solved') startTimer()
 })
 
 onUnmounted(() => {
-	document.removeEventListener("visibilitychange", handleWindowVisibility)
-	clearTimer()
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  pauseTimer()
 })
 </script>
 
 <template>
   <div class="sudoku__timer">
-    <span class="timer">{{ timerValue }}</span>
+    <span class="timer">{{ timerText }}</span>
   </div>
 </template>
 
@@ -102,6 +88,7 @@ onUnmounted(() => {
   .sudoku__timer {
     margin-bottom: 2rem;
   }
+
   .timer {
     font-size: 2rem;
   }
