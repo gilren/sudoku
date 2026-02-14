@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
-import SudokuBoard from "@/components/SudokuBoard.vue"
-import SudokuControls from "@/components/SudokuControls.vue"
-import { useGameStore } from "@/store/game"
-import GameAlert from "./GameAlert.vue"
+import { ref, watch } from "vue";
+import { useGameStore } from "@/store/game";
+import GameAlert from "./GameAlert.vue";
+import SudokuBoard from "./SudokuBoard.vue";
+import SudokuControls from "./SudokuControls.vue";
 
-const store = useGameStore()
-const showAlert = ref(false)
+const store = useGameStore();
+const showAlert = ref(false);
 
 watch(
-	() => store.status,
-	(newstatus) => {
-		if (newstatus === "solved") {
-			showAlert.value = true
-		}
-	},
-	{ immediate: true },
-)
+  () => store.status,
+  (newstatus) => {
+    if (newstatus === "solved") {
+      showAlert.value = true;
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

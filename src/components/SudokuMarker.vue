@@ -1,54 +1,59 @@
 <script setup lang="ts">
-import { useTemplateRef } from "vue"
-
-const markersRef = useTemplateRef("marker")
+import { useTemplateRef } from 'vue'
 
 const props = defineProps<{
-	markers: Set<number>
+  markers: Set<number> | null
 }>()
 
-const emit = defineEmits(["update"])
+const emit = defineEmits<{
+  (e: 'update', value: Set<number> | null): void
+}>()
+
+const markersRef = useTemplateRef('marker')
+
+function handleClick(e: PointerEvent) {
+  e.preventDefault()
+  if (!(e.target instanceof HTMLButtonElement) || !markersRef.value) return
+  const value = markersRef.value.indexOf(e.target) + 1
+
+  updateMarker(value)
+}
+
+function updateMarker(value: number) {
+  let nextMarkers: Set<number>
+
+  if (!props.markers) {
+    nextMarkers = new Set()
+  } else {
+    nextMarkers = new Set(props.markers)
+  }
+
+  nextMarkers.has(value) ? nextMarkers.delete(value) : nextMarkers.add(value)
+
+  emit('update', nextMarkers)
+}
+
+function clean() {
+  emit('update', null)
+}
 
 function sendKey(key: number) {
-	let index = Number(key)
-	if (index === 0) index--
-	updateMarker(index)
-}
-
-defineExpose({
-	sendKey,
-})
-
-function handleClick(e: MouseEvent) {
-	if (markersRef.value) {
-		const index = markersRef.value.findIndex((el) => el === e.target) + 1
-		if (index === 0) return
-		updateMarker(index)
-	}
-}
-
-function updateMarker(index: number) {
-	if (index !== -1) {
-		const updatedMarkers = new Set(props.markers)
-		if (updatedMarkers.has(index)) {
-			updatedMarkers.delete(index)
-		} else {
-			updatedMarkers.add(index)
-		}
-		emit("update", updatedMarkers)
-	} else {
-		emit("update", [])
-	}
+  updateMarker(Number(key))
 }
 
 function isMarkerActive(marker: number) {
-	return props.markers.has(marker)
+  return props.markers?.has(marker) ?? false
 }
+
+defineExpose({
+  clean,
+  sendKey,
+})
 </script>
 
 <template>
   <div class="marker-container" @click="handleClick">
-    <div
+    <button
       v-for="n in 9"
       :key="n"
       class="marker"
@@ -56,7 +61,7 @@ function isMarkerActive(marker: number) {
       :class="{ selected: isMarkerActive(n) }"
     >
       {{ n }}
-    </div>
+    </button>
   </div>
 </template>
 
@@ -86,6 +91,8 @@ function isMarkerActive(marker: number) {
   opacity: 0.5;
   font-weight: 600;
   visibility: hidden;
+  border: none;
+  background: none;
   border-radius: 50%;
   transform: translate3d(0, 0, 0);
   transition:
@@ -98,27 +105,35 @@ function isMarkerActive(marker: number) {
 .marker:not(.selected):nth-child(1) {
   transform: translate3d(100%, 100%, 0);
 }
+
 .marker:not(.selected):nth-child(2) {
   transform: translate3d(0, 100%, 0);
 }
+
 .marker:not(.selected):nth-child(3) {
   transform: translate3d(-100%, 100%, 0);
 }
+
 .marker:not(.selected):nth-child(4) {
   transform: translate3d(100%, 0, 0);
 }
+
 .marker:not(.selected):nth-child(5) {
   transform: translate3d(0, 0, 0);
 }
+
 .marker:not(.selected):nth-child(6) {
   transform: translate3d(-100%, 0, 0);
 }
+
 .marker:not(.selected):nth-child(7) {
   transform: translate3d(100%, -100%, 0);
 }
+
 .marker:not(.selected):nth-child(8) {
   transform: translate3d(0, -100%, 0);
 }
+
 .marker:not(.selected):nth-child(9) {
   transform: translate3d(-100%, -100%, 0);
 }
