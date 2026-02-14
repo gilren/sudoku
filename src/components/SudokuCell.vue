@@ -73,11 +73,14 @@ defineExpose({
 </script>
 
 <template>
-  <div class="cell" :class="{
-    'cell--default': isDefault,
-    'has-markers': hasMultipleMarkers,
-    'cell--invalid': isInvalid,
-  }">
+  <div
+    class="cell"
+    :class="{
+      'cell--default': isDefault,
+      'has-markers': hasMultipleMarkers,
+      'cell--invalid': isInvalid,
+    }"
+  >
     <!-- {{ currentValue }} -->
     <div class="number-container">
       {{ currentValue !== 0 ? currentValue : '' }}
@@ -107,11 +110,13 @@ defineExpose({
 .cell.cell--default {
   color: var(--whisper);
 
-  background: repeating-linear-gradient(55deg,
-      transparent,
-      transparent 5px,
-      rgba(0, 0, 0, 0.18) 5px,
-      rgba(0, 0, 0, 0.18) 10px);
+  background: repeating-linear-gradient(
+    55deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 0, 0, 0.18) 5px,
+    rgba(0, 0, 0, 0.18) 10px
+  );
 }
 
 .cell.cell--invalid {
@@ -164,11 +169,13 @@ defineExpose({
   }
 
   .cell.cell--default {
-    background: repeating-linear-gradient(55deg,
-        transparent,
-        transparent 10px,
-        rgba(0, 0, 0, 0.18) 10px,
-        rgba(0, 0, 0, 0.18) 20px);
+    background: repeating-linear-gradient(
+      55deg,
+      transparent,
+      transparent 10px,
+      rgba(0, 0, 0, 0.18) 10px,
+      rgba(0, 0, 0, 0.18) 20px
+    );
   }
 }
 
