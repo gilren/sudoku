@@ -10,15 +10,14 @@
 		"test:unit": "vitest",
 		"build-only": "vite build",
 		"type-check": "vue-tsc --build",
-		"lint": "biome check ./src",
-		"lint:fix": "bun lint --write ./src"
+		"lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
+		"format": "prettier --write src/"
 	},
 	"dependencies": {
 		"pinia": "^3.0.4",
 		"vue": "^3.5.28"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.15",
 		"@tsconfig/node24": "^24.0.4",
 		"@types/jsdom": "^27.0.0",
 		"@types/node": "^24.10.13",
@@ -29,7 +28,9 @@
 		"@vue/test-utils": "^2.4.6",
 		"@vue/tsconfig": "^0.8.1",
 		"eslint": "^9.39.2",
+		"eslint-plugin-oxlint": "^1.46.0",
 		"eslint-plugin-vue": "^9.33.0",
+		"jiti": "^2.6.1",
 		"jsdom": "^27.4.0",
 		"npm-run-all2": "^8.0.4",
 		"typescript": "~5.9.3",
