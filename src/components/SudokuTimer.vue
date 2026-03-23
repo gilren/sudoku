@@ -37,9 +37,10 @@ function pauseTimer() {
 
 function resetTimer() {
   elapsedTime = 0
+  clearInterval(timerInterval!)
+  timerInterval = null
   startTimer()
 }
-
 function handleVisibilityChange() {
   if (store.status === 'solved') return
   document.hidden ? pauseTimer() : startTimer()

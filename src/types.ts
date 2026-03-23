@@ -1,4 +1,4 @@
-export const DIFFICULTIES = ['easy', 'medium', 'hard', 'expert', 'master'] as const
+export const DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const
 type DifficultyTuple = typeof DIFFICULTIES
 export type Difficulty = DifficultyTuple[number]
 

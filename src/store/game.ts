@@ -114,6 +114,8 @@ export const useGameStore = defineStore('game', {
       const stored = localStorage.getItem('seed')
       if (stored === null) return this.createSeed(maxLength)
 
+        console.log(stored)
+
       const parsed = Number(stored)
       if (Number.isNaN(parsed)) return this.createSeed(maxLength)
 
@@ -234,7 +236,6 @@ export const useGameStore = defineStore('game', {
     restartGame() {
       this.deleteUndoStack()
       this.deleteBoards()
-      this.setDifficulty(this.getDifficulty)
       this.loadBoard()
     },
 
