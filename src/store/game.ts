@@ -22,6 +22,7 @@ interface GameState {
   solution: Board | null
   undoStack: UndoAction[]
   errors: Duplicate[]
+  isDebug: boolean
 }
 
 export const useGameStore = defineStore('game', {
@@ -35,6 +36,7 @@ export const useGameStore = defineStore('game', {
     solution: null,
     undoStack: [],
     errors: [],
+    isDebug: false
   }),
   getters: {
     getDifficulty: (state) => {
@@ -81,8 +83,11 @@ export const useGameStore = defineStore('game', {
     async loadBoard() {
       try {
         this.status = 'loading'
-        const difficulty = this.getDifficulty
 
+        const params = new URLSearchParams(window.location.search)
+        this.isDebug = params.get('debug') === 'true'
+
+        const difficulty = this.isDebug ? 'debug' : this.getDifficulty
         const data: Board[] = (await import(`../../sudokus/${difficulty}.json`)).default
 
         let seed = this.getOrCreateSeed(data.length)
@@ -91,8 +96,8 @@ export const useGameStore = defineStore('game', {
           seed = this.createSeed(data.length)
         }
 
-        this.board = data[seed]!
-        this.initialBoard = data[seed]!
+        this.board = data[seed]!.map(row => [...row]) as Board
+        this.initialBoard = data[seed]!.map(row => [...row]) as Board
 
         console.log(`Loading board with difficulty ${difficulty} and seed ${seed}`)
         this.status = 'playing'

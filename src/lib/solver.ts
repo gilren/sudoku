@@ -75,38 +75,27 @@ function isValidBoard(board: unknown): board is Board {
 }
 
 function canPlaceValue(value: number, row: number, col: number, board: Board): boolean {
-  // Can place in block
-  const startX = BLOCK_SIZE * Math.floor(row / BLOCK_SIZE)
-  const startY = BLOCK_SIZE * Math.floor(col / BLOCK_SIZE)
+  // Check 3x3 block
+  const startX = BLOCK_SIZE * Math.floor(col / BLOCK_SIZE)
+  const startY = BLOCK_SIZE * Math.floor(row / BLOCK_SIZE)
 
-  for (let x = 0; x < BLOCK_SIZE; x++) {
-    for (let y = 0; y < BLOCK_SIZE; y++) {
-      // console.log(`Checking block: {${x},${y}} - Value: ${value}`);
-      if (board[startX + x]![startY + y] === value) {
-        // console.log(`Duplicate found in block at {${startX + x}, ${startY + y}}`);
-        return false
-      }
+  for (let y = 0; y < BLOCK_SIZE; y++) {
+    for (let x = 0; x < BLOCK_SIZE; x++) {
+      if (board[startY + y]![startX + x] === value) return false
     }
   }
 
-  // Can place in row & column
-  for (let i = 0; i < BOARD_SIZE; i++) {
-    // Skip cells that overlap with the block in the column
-    if (i < startX || i > startX + (BLOCK_SIZE - 1)) {
-      // console.log(`Checking column: {${i},${col}} - Value: ${value}`);
-      if (board[i]![col] === value) {
-        // console.log(`Duplicate found in column at {${i}, ${col}}`);
-        return false
-      }
+  // Check column (skip rows already covered by the block)
+  for (let r = 0; r < BOARD_SIZE; r++) {
+    if (r < startY || r > startY + (BLOCK_SIZE - 1)) {
+      if (board[r]![col] === value) return false
     }
+  }
 
-    // Skip cells that overlap with the block in the row
-    if (i < startY || i > startY + (BLOCK_SIZE - 1)) {
-      // console.log(`Checking row: {${row}, ${i}} - Value: ${value}`);
-      if (board[row]![i] === value) {
-        // console.log(`Duplicate found in row at {${row}, ${i}}`);
-        return false
-      }
+  // Check row (skip columns already covered by the block)
+  for (let c = 0; c < BOARD_SIZE; c++) {
+    if (c < startX || c > startX + (BLOCK_SIZE - 1)) {
+      if (board[row]![c] === value) return false
     }
   }
 

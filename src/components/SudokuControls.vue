@@ -38,11 +38,17 @@ function restartTimer() {
   <div class="sudoku__controls">
     <SudokuTimer :restartKey="timerKey" />
     <div class="sudoku__actions">
-      <select name="difficulty" v-model="currentDifficulty" @change="changeDifficulty">
+      <select
+        v-if="!store.isDebug"
+        name="difficulty"
+        v-model="currentDifficulty"
+        @change="changeDifficulty"
+      >
         <option v-for="option in DIFFICULTIES" :value="option" :key="option">
           {{ option[0]!.toUpperCase() + option.slice(1) }}
         </option>
       </select>
+      <span class="btn debug" v-else>DEBUG</span>
       <button class="btn" @click="handleRestart">Restart</button>
       <button class="btn" @click="handleNew">New</button>
       <button class="btn btn-validate" @click="handleValidate">Validate</button>
@@ -76,6 +82,12 @@ function restartTimer() {
 
   select {
     padding: 0.75em 1em;
+  }
+
+  .btn.debug {
+    background-color: transparent;
+    border: 1px dashed var(--olivine);
+    cursor: initial;
   }
 }
 </style>
